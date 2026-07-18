@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#07111f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kennedy Finance">
+<title>Kennedy Finance</title>
+<style>
+:root{
+  --bg:#07111f;--bg2:#0a1424;--card:#11233a;--card2:#162c48;--line:#29435f;
+  --text:#f8fafc;--muted:#94a3b8;--blue:#60a5fa;--blue2:#2563eb;--green:#22c55e;
+  --red:#ef4444;--shadow:0 18px 55px rgba(0,0,0,.3)
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:linear-gradient(180deg,var(--bg),var(--bg2) 50%,var(--bg));color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input{font:inherit}
+button{cursor:pointer}
+.app{max-width:760px;margin:0 auto;padding:calc(18px + env(safe-area-inset-top)) 16px calc(100px + env(safe-area-inset-bottom))}
+header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:46px;height:46px;border-radius:15px;background:linear-gradient(145deg,#1d4ed8,#123253);display:grid;place-items:center;font-size:23px;font-weight:900;box-shadow:var(--shadow)}
+.eyebrow{font-size:11px;font-weight:900;letter-spacing:.16em;color:var(--blue);margin:0 0 4px}
+h1{font-size:25px;line-height:1.1;margin:0 0 5px}
+h2{font-size:20px;margin:0}
+.muted{color:var(--muted)}
+.icon{border:0;background:#132944;color:#dbeafe;border-radius:14px;padding:11px;font-size:18px}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;position:sticky;top:0;z-index:10;padding:8px 0;background:linear-gradient(180deg,var(--bg),rgba(7,17,31,.92))}
+.tab{border:1px solid #28435f;background:#11233a;color:#94a3b8;border-radius:14px;padding:10px 6px;font-weight:800;font-size:12px}
+.tab.active{background:#1d4ed8;color:#fff;border-color:#3b82f6}
+.page{display:none}
+.page.active{display:block}
+.card{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid rgba(148,163,184,.14);border-radius:22px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+.health{display:flex;justify-content:space-between;align-items:center}
+.score{font-size:48px;font-weight:900;line-height:1}
+.ring{width:104px;height:104px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--green) calc(var(--p)*1%),#263e5c 0);position:relative}
+.ring:after{content:"";position:absolute;inset:11px;background:var(--card);border-radius:50%}
+.ring span{position:relative;z-index:1;text-align:center;font-size:23px;font-weight:900}
+.ring small{display:block;font-size:10px;color:var(--muted);font-weight:600}
+.grid{display:grid;gap:12px}.two{grid-template-columns:1fr 1fr}.three{grid-template-columns:repeat(3,1fr)}
+.metric strong{display:block;font-size:25px;margin-top:8px}
+.green{color:var(--green);font-size:12px;margin-top:4px}
+.head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.pill{background:rgba(96,165,250,.15);color:#dbeafe;border:1px solid rgba(96,165,250,.25);border-radius:999px;padding:8px 11px;font-weight:900}
+.primary,.secondary,.danger{width:100%;border:0;border-radius:15px;padding:13px 15px;margin-top:12px;font-weight:900}
+.primary{color:#fff;background:linear-gradient(90deg,#1d4ed8,#3b82f6)}
+.secondary{color:#dbeafe;background:#203650;border:1px solid #315274}
+.danger{color:#fee2e2;background:#4a1d24}
+.linkbtn{border:0;background:none;color:#93c5fd;font-weight:800;padding:5px}
+.debt{display:grid;grid-template-columns:1fr auto;gap:12px;padding:13px 0;border-top:1px solid var(--line)}
+.debt:first-child{border-top:0}
+.debtname{font-weight:900}.meta{font-size:12px;color:var(--muted);margin-top:3px}.balance{font-weight:900;text-align:right}
+.progress{height:10px;background:#24384f;border-radius:99px;overflow:hidden;margin:12px 0}
+.progress span{display:block;height:100%;background:linear-gradient(90deg,#2563eb,#60a5fa)}
+.stat{background:rgba(255,255,255,.035);padding:12px;border-radius:15px}
+.stat strong{display:block;margin-top:6px;font-size:18px}
+.win{display:flex;gap:10px;padding:12px 0;border-top:1px solid var(--line)}
+.win:first-child{border-top:0}.win i{font-style:normal;font-size:22px}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:flex-end;justify-content:center;z-index:50;backdrop-filter:blur(5px)}
+.overlay.show{display:flex}
+.sheet{width:min(760px,100%);background:#102036;border:1px solid #315274;border-radius:26px 26px 0 0;padding:20px 16px calc(18px + env(safe-area-inset-bottom));max-height:88vh;overflow:auto}
+.sheethead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.close{border:0;background:#213750;color:#fff;border-radius:50%;width:36px;height:36px}
+.field{margin:13px 0}
+.field label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px}
+.field input{width:100%;padding:13px;border-radius:13px;border:1px solid #35516f;background:#091524;color:#fff;font-size:16px}
+.celebrate{align-items:center}.celebrate .sheet{border-radius:28px;width:min(390px,calc(100% - 32px));text-align:center;padding:28px}
+.confetti{font-size:62px}
+.note{text-align:center;font-size:12px;color:var(--muted);margin-top:13px}
+@media(max-width:520px){.three{grid-template-columns:1fr}.score{font-size:42px}.ring{width:94px;height:94px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="brand"><div class="logo">K</div><div><div class="eyebrow">KENNEDY FINANCE</div><h1 id="greeting">Good morning, Chris 👋</h1><div class="muted">Small steps. Big results.</div></div></div>
+  <button class="icon" id="settingsBtn" type="button">⚙️</button>
+</header>
+
+<nav class="tabs" aria-label="App sections">
+  <button class="tab active" data-page="homePage" type="button">🏠 Home</button>
+  <button class="tab" data-page="debtsPage" type="button">💳 Debts</button>
+  <button class="tab" data-page="goalsPage" type="button">🎯 Goals</button>
+  <button class="tab" data-page="businessPage" type="button">📦 Business</button>
+</nav>
+
+<main>
+<section class="page active" id="homePage">
+  <section class="card health"><div><div class="muted">Financial Health</div><div class="score" id="healthScore">68</div><div class="muted" id="healthText">Building momentum</div></div><div class="ring" id="healthRing" style="--p:68"><span id="healthRingText">68<small>out of 100</small></span></div></section>
+  <div class="grid two"><section class="card metric"><div class="muted">Money available</div><strong id="available">£941.34</strong><div class="green">This month</div></section><section class="card metric"><div class="muted">Credit score</div><strong id="credit">753</strong><div class="green">Good</div></section></div>
+  <section class="card"><div class="head"><div><div class="eyebrow">TODAY'S ONE GOAL</div><h2 id="goalTitle">Reduce Capital One</h2></div><span class="pill" id="goalAmount">£163</span></div><p id="goalText">Pay £163 to lower the balance and improve credit utilisation.</p><button class="primary" id="completeGoalBtn" type="button">Mark complete</button></section>
+  <section class="card"><div class="head"><div><div class="eyebrow">RECENT WINS</div><h2>Your journey</h2></div><button class="linkbtn" id="addWinBtn" type="button">Add win</button></div><div id="winsList"></div></section>
+</section>
+
+<section class="page" id="debtsPage">
+  <section class="card"><div class="head"><div><div class="eyebrow">DEBT CENTRE</div><h2>Unsecured debt</h2></div><strong id="totalDebt"></strong></div><div id="debtList"></div><button class="secondary" id="addDebtBtn" type="button">Add debt</button></section>
+</section>
+
+<section class="page" id="goalsPage">
+  <section class="card"><div class="eyebrow">HOUSE GOAL</div><h2 id="depositText"></h2><div class="progress"><span id="depositBar"></span></div><button class="secondary" id="editDepositBtn" type="button">Update deposit</button></section>
+  <section class="card"><div class="eyebrow">EMERGENCY FUND</div><h2 id="emergencyText"></h2><div class="progress"><span id="emergencyBar"></span></div><button class="secondary" id="editEmergencyBtn" type="button">Update emergency fund</button></section>
+</section>
+
+<section class="page" id="businessPage">
+  <section class="card"><div class="head"><div><div class="eyebrow">PLATINUM COOLING</div><h2>This month</h2></div><button class="linkbtn" id="editBusinessBtn" type="button">Update</button></div><div class="grid three" style="margin-top:14px"><div class="stat"><span class="muted">Sales</span><strong id="sales"></strong></div><div class="stat"><span class="muted">Profit</span><strong id="profit"></strong></div><div class="stat"><span class="muted">VAT reserve</span><strong id="vat"></strong></div></div></section>
+  <section class="card" style="text-align:center"><div class="eyebrow">FOUNDING MILESTONE</div><h2>🚀 Kennedy Finance Version 3.0</h2><p>Project started 18 July 2026.</p><div class="muted">Progress, not perfection.</div></section>
+</section>
+</main>
+<div class="note">Your figures are saved privately on this iPhone.</div>
+</div>
+
+<div class="overlay" id="editor">
+  <div class="sheet">
+    <div class="sheethead"><h2 id="editorTitle">Update</h2><button class="close" id="closeEditorBtn" type="button">✕</button></div>
+    <div id="editorFields"></div>
+    <button class="primary" id="saveEditorBtn" type="button">Save changes</button>
+    <button class="danger" id="deleteEditorBtn" type="button" style="display:none">Delete</button>
+  </div>
+</div>
+
+<div class="overlay celebrate" id="celebration">
+  <div class="sheet"><div class="confetti">🎉</div><h2>Congratulations!</h2><p id="celebrationText">Another small step towards financial freedom.</p><button class="primary" id="closeCelebrationBtn" type="button">Keep going</button></div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const defaults={
+ name:"Chris",available:941.34,credit:753,deposit:0,depositGoal:30000,emergency:0,emergencyGoal:3000,
+ goal:{title:"Reduce Capital One",amount:163,text:"Pay £163 to lower the balance and improve credit utilisation.",done:false},
+ debts:[
+  {name:"HSBC loan",balance:8645.59,rate:17.9,original:9000},{name:"Tesco loan",balance:7490,rate:0,original:7490},
+  {name:"Nationwide loan",balance:2163,rate:15,original:2500},{name:"Tandem loan",balance:1957,rate:0,original:1957},
+  {name:"Novuna loan",balance:1020,rate:0,original:1020},{name:"Nationwide overdraft",balance:1495.28,rate:0,original:1500},
+  {name:"Capital One",balance:663.34,rate:0,original:800},{name:"Creation",balance:299,rate:0,original:450},
+  {name:"NewDay",balance:121,rate:0,original:1200}
+ ],
+ business:{sales:0,profit:0,vat:0},
+ wins:[{icon:"🚀",text:"Kennedy Finance Version 3.0 started"},{icon:"⭐",text:"Credit score recorded at 753"}]
+};
+const $=id=>document.getElementById(id);
+let data;
+try{data=JSON.parse(localStorage.getItem("kennedyFinanceV3"))||structuredClone(defaults)}catch(e){data=structuredClone(defaults)}
+const gbp=n=>new Intl.NumberFormat("en-GB",{style:"currency",currency:"GBP"}).format(Number(n||0));
+const save=()=>localStorage.setItem("kennedyFinanceV3",JSON.stringify(data));
+const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
+
+function calcHealth(){
+ let s=50;
+ if(data.credit>=750)s+=12;else if(data.credit>=650)s+=7;
+ if(data.available>500)s+=6;
+ s+=Math.min(10,Math.round(data.emergency/Math.max(1,data.emergencyGoal)*10));
+ if(data.debts.some(d=>["Capital One","Creation","Nationwide overdraft"].includes(d.name)&&d.balance/Math.max(1,d.original)>.8))s-=8;
+ if(data.business.profit>0)s+=5;
+ return Math.max(0,Math.min(100,s));
+}
+function render(){
+ const hr=new Date().getHours(),part=hr<12?"morning":hr<18?"afternoon":"evening";
+ $("greeting").textContent=`Good ${part}, ${data.name} 👋`;
+ $("available").textContent=gbp(data.available);$("credit").textContent=data.credit;
+ const hs=calcHealth();$("healthScore").textContent=hs;$("healthText").textContent=hs>=80?"Excellent momentum":hs>=65?"Building momentum":"One step at a time";$("healthRing").style.setProperty("--p",hs);$("healthRingText").innerHTML=hs+"<small>out of 100</small>";
+ $("goalTitle").textContent=data.goal.title;$("goalAmount").textContent=gbp(data.goal.amount).replace(".00","");$("goalText").textContent=data.goal.done?"Completed — well done.":data.goal.text;$("completeGoalBtn").textContent=data.goal.done?"Completed ✓":"Mark complete";$("completeGoalBtn").disabled=data.goal.done;
+ $("totalDebt").textContent=gbp(data.debts.reduce((s,d)=>s+Number(d.balance||0),0));
+ $("debtList").innerHTML=data.debts.map((d,i)=>`<div class="debt"><div><div class="debtname">${esc(d.name)}</div><div class="meta">${d.rate?d.rate+"% APR":"APR not entered"} · tap balance to edit</div></div><button class="linkbtn balance" type="button" data-debt="${i}">${gbp(d.balance)}</button></div>`).join("");
+ $("depositText").textContent=`${gbp(data.deposit)} / ${gbp(data.depositGoal)}`;$("depositBar").style.width=Math.min(100,data.deposit/Math.max(1,data.depositGoal)*100)+"%";
+ $("emergencyText").textContent=`${gbp(data.emergency)} / ${gbp(data.emergencyGoal)}`;$("emergencyBar").style.width=Math.min(100,data.emergency/Math.max(1,data.emergencyGoal)*100)+"%";
+ $("sales").textContent=gbp(data.business.sales);$("profit").textContent=gbp(data.business.profit);$("vat").textContent=gbp(data.business.vat);
+ $("winsList").innerHTML=data.wins.slice().reverse().map(w=>`<div class="win"><i>${w.icon}</i><div>${esc(w.text)}</div></div>`).join("");
+ save();
+}
+
+document.querySelectorAll(".tab").forEach(btn=>{
+ btn.addEventListener("click",()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+  btn.classList.add("active");
+  $(btn.dataset.page).classList.add("active");
+  window.scrollTo({top:0,behavior:"smooth"});
+ });
+});
+
+let onSave=null,onDelete=null;
+function openEditor(title,fields,saveFn,deleteFn){
+ $("editorTitle").textContent=title;
+ $("editorFields").innerHTML=fields.map(f=>`<div class="field"><label for="${f.id}">${f.label}</label><input id="${f.id}" type="${f.type||"number"}" step="${f.step||"0.01"}" value="${esc(f.value??"")}"></div>`).join("");
+ onSave=saveFn;onDelete=deleteFn||null;
+ $("deleteEditorBtn").style.display=onDelete?"block":"none";
+ $("editor").classList.add("show");
+}
+function closeEditor(){$("editor").classList.remove("show")}
+$("closeEditorBtn").addEventListener("click",closeEditor);
+$("editor").addEventListener("click",e=>{if(e.target===$("editor"))closeEditor()});
+$("saveEditorBtn").addEventListener("click",()=>{if(onSave)onSave();closeEditor();render()});
+$("deleteEditorBtn").addEventListener("click",()=>{if(onDelete&&confirm("Delete this item?")){onDelete();closeEditor();render()}});
+
+$("settingsBtn").addEventListener("click",()=>openEditor("Settings",[
+ {id:"fName",label:"Your name",type:"text",value:data.name},{id:"fAvailable",label:"Money available this month",value:data.available},{id:"fCredit",label:"Credit score",value:data.credit,step:"1"}
+],()=>{data.name=$("fName").value.trim()||"Chris";data.available=+$("fAvailable").value;data.credit=+$("fCredit").value}));
+
+$("completeGoalBtn").addEventListener("click",()=>{
+ data.goal.done=true;data.wins.push({icon:"🎯",text:"Completed goal: "+data.goal.title});
+ $("celebrationText").textContent="Another small step towards financial freedom.";
+ $("celebration").classList.add("show");render();
+});
+$("closeCelebrationBtn").addEventListener("click",()=>$("celebration").classList.remove("show"));
+
+$("debtList").addEventListener("click",e=>{
+ const b=e.target.closest("[data-debt]");if(!b)return;
+ const i=Number(b.dataset.debt),d=data.debts[i];
+ openEditor("Edit debt",[
+  {id:"dName",label:"Debt name",type:"text",value:d.name},{id:"dBalance",label:"Current balance",value:d.balance},
+  {id:"dRate",label:"APR",value:d.rate},{id:"dOriginal",label:"Starting balance or credit limit",value:d.original}
+ ],()=>{
+  d.name=$("dName").value.trim()||"Debt";d.balance=+$("dBalance").value;d.rate=+$("dRate").value;d.original=+$("dOriginal").value;
+  if(d.balance===0){data.wins.push({icon:"🎉",text:"Cleared "+d.name});$("celebrationText").textContent=d.name+" has been cleared. Brilliant work.";$("celebration").classList.add("show")}
+ },()=>data.debts.splice(i,1));
+});
+$("addDebtBtn").addEventListener("click",()=>openEditor("Add debt",[
+ {id:"dName",label:"Debt name",type:"text",value:""},{id:"dBalance",label:"Current balance",value:0},
+ {id:"dRate",label:"APR",value:0},{id:"dOriginal",label:"Starting balance or credit limit",value:0}
+],()=>data.debts.push({name:$("dName").value.trim()||"New debt",balance:+$("dBalance").value,rate:+$("dRate").value,original:+$("dOriginal").value})));
+
+$("editDepositBtn").addEventListener("click",()=>openEditor("Update house deposit",[
+ {id:"gCurrent",label:"Current amount",value:data.deposit},{id:"gTarget",label:"Target amount",value:data.depositGoal}
+],()=>{data.deposit=+$("gCurrent").value;data.depositGoal=+$("gTarget").value}));
+
+$("editEmergencyBtn").addEventListener("click",()=>openEditor("Update emergency fund",[
+ {id:"gCurrent",label:"Current amount",value:data.emergency},{id:"gTarget",label:"Target amount",value:data.emergencyGoal}
+],()=>{data.emergency=+$("gCurrent").value;data.emergencyGoal=+$("gTarget").value}));
+
+$("editBusinessBtn").addEventListener("click",()=>openEditor("Update Platinum Cooling",[
+ {id:"bSales",label:"Sales this month",value:data.business.sales},{id:"bProfit",label:"Profit this month",value:data.business.profit},{id:"bVat",label:"VAT reserve",value:data.business.vat}
+],()=>{data.business.sales=+$("bSales").value;data.business.profit=+$("bProfit").value;data.business.vat=+$("bVat").value}));
+
+$("addWinBtn").addEventListener("click",()=>openEditor("Add a win",[
+ {id:"wText",label:"What did you achieve?",type:"text",value:""}
+],()=>{const t=$("wText").value.trim();if(t)data.wins.push({icon:"🏆",text:t})}));
+
+render();
+})();
+</script>
+</body>
+</html>
