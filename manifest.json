@@ -1,0 +1,9 @@
+{
+  "name": "Kennedy Pro",
+  "short_name": "Kennedy Pro",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#061426",
+  "theme_color": "#061426",
+  "description": "Personal debt, bills and financial progress tracker."
+}
