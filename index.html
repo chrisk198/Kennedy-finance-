@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#061426">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kennedy Pro">
+<link rel="manifest" href="manifest.json">
+<title>Kennedy Pro</title>
+<style>
+:root{
+ --bg:#061426;--bg2:#081c31;--panel:#102b49;--panel2:#15395f;--line:#315779;
+ --text:#f8fafc;--muted:#a8b5c6;--blue:#5aa2ff;--blue2:#2463eb;--green:#2dcc70;
+ --amber:#f6b73c;--red:#ef5b5b;--shadow:0 18px 45px rgba(0,0,0,.32);--radius:24px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(circle at 90% 0,rgba(36,99,235,.2),transparent 32%),linear-gradient(180deg,var(--bg),var(--bg2) 48%,var(--bg));color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;min-height:100vh}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.app{max-width:820px;margin:auto;padding:calc(18px + env(safe-area-inset-top)) 16px calc(112px + env(safe-area-inset-bottom))}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{width:64px;height:64px;border-radius:21px;background:linear-gradient(145deg,#2e6fff,#0a3b86);display:grid;place-items:center;font-weight:900;font-size:34px;box-shadow:var(--shadow)}
+.eyebrow{font-size:11px;font-weight:900;letter-spacing:.18em;color:var(--blue);text-transform:uppercase}
+h1{font-size:30px;line-height:1.05;margin:5px 0}
+h2{font-size:21px;margin:0}
+h3{margin:0 0 6px}
+.muted{color:var(--muted)}
+.icon{border:0;background:var(--panel);color:white;border-radius:18px;width:58px;height:58px;font-size:25px;border:1px solid rgba(255,255,255,.06)}
+.tabs{display:flex;gap:10px;overflow-x:auto;position:sticky;top:0;z-index:20;margin:20px -16px 16px;padding:12px 16px;background:rgba(6,20,38,.92);backdrop-filter:blur(15px)}
+.tab{border:1px solid #315779;background:#102b49;color:#cbd5e1;padding:13px 17px;border-radius:18px;font-weight:800;white-space:nowrap}
+.tab.active{background:linear-gradient(145deg,#2d6eff,#1f55cc);color:#fff}
+.page{display:none}.page.active{display:block}
+.card{background:linear-gradient(180deg,rgba(21,57,95,.96),rgba(16,43,73,.96));border:1px solid rgba(90,162,255,.2);border-radius:var(--radius);padding:20px;margin:14px 0;box-shadow:var(--shadow)}
+.grid{display:grid;gap:14px}.two{grid-template-columns:repeat(2,minmax(0,1fr))}.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.metric strong{display:block;font-size:27px;margin-top:7px}
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.primary,.secondary,.danger,.linkbtn{border:0;border-radius:16px;padding:14px 17px;font-weight:900}
+.primary{background:linear-gradient(145deg,#2e70ff,#1e52c6);color:#fff;width:100%}
+.secondary{background:#203f61;color:#fff;border:1px solid #3b6387}
+.danger{background:#5b2027;color:#ffdede}
+.linkbtn{background:none;color:var(--blue);padding:4px}
+.progress{height:15px;background:#28445f;border-radius:99px;overflow:hidden;margin:14px 0}.progress span{display:block;height:100%;background:linear-gradient(90deg,#2e70ff,#59a5ff)}
+.account,.bill,.journey{padding:15px 0;border-top:1px solid var(--line)}.account:first-child,.bill:first-child,.journey:first-child{border-top:0}
+.row{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.badge{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:900;background:#203f61}
+.badge.green{background:rgba(45,204,112,.15);color:#74efa8}.badge.amber{background:rgba(246,183,60,.15);color:#ffd06e}.badge.red{background:rgba(239,91,91,.15);color:#ff9a9a}
+.details{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.detail{background:rgba(255,255,255,.035);padding:11px;border-radius:14px}.detail span{font-size:12px;color:var(--muted);display:block}.detail strong{display:block;margin-top:3px;overflow-wrap:anywhere}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.toolbar button{flex:1;min-width:135px}
+.statusbar{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.status{background:rgba(255,255,255,.04);padding:12px;border-radius:15px}.status strong{display:block;font-size:20px;margin-top:4px}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);display:none;align-items:flex-end;justify-content:center;z-index:80;backdrop-filter:blur(7px)}.overlay.show{display:flex}
+.sheet{width:min(820px,100%);max-height:90vh;overflow:auto;background:#102b49;border:1px solid #416a90;border-radius:28px 28px 0 0;padding:22px 17px calc(22px + env(safe-area-inset-bottom))}
+.sheethead{display:flex;justify-content:space-between;align-items:center}.close{border:0;background:#284a6d;color:white;border-radius:50%;width:38px;height:38px}
+.field{margin:14px 0}.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:7px}.field input,.field select,.field textarea{width:100%;padding:14px;border-radius:14px;border:1px solid #42698e;background:#071a2d;color:white}.field textarea{min-height:90px}
+.file{display:block;border:1px dashed #5a7da0;border-radius:18px;padding:18px;text-align:center;color:#cbd5e1}
+.lock{position:fixed;inset:0;z-index:100;background:linear-gradient(180deg,#061426,#081c31);display:none;place-items:center;padding:24px}.lock.show{display:grid}.lockbox{width:min(390px,100%);text-align:center}.pin{font-size:24px;letter-spacing:.2em;text-align:center}
+.notice{padding:13px;border-radius:15px;background:rgba(246,183,60,.1);border:1px solid rgba(246,183,60,.25);color:#ffe0a0}
+.small{font-size:12px}.empty{text-align:center;padding:22px;color:var(--muted)}
+@media(max-width:610px){.two,.three,.details,.statusbar{grid-template-columns:1fr}.logo{width:57px;height:57px}.metric strong{font-size:23px}}
+
+.cycle-group{margin-top:20px}.cycle-group-title{display:flex;justify-content:space-between;align-items:center;padding:10px 0;color:var(--blue);font-weight:900;letter-spacing:.06em;text-transform:uppercase;font-size:12px}
+.bill-date{min-width:58px;text-align:center;background:rgba(255,255,255,.04);padding:9px 6px;border-radius:13px}.bill-date strong{display:block;font-size:20px}.bill-date span{font-size:11px;color:var(--muted)}
+
+</style>
+</head>
+<body>
+<div class="lock" id="lock">
+ <div class="lockbox">
+  <div class="logo" style="margin:0 auto 18px">K</div>
+  <div class="eyebrow">KENNEDY PRO</div><h1>Welcome back, Chris</h1>
+  <p class="muted">Enter your passcode to unlock.</p>
+  <input class="pin" id="unlockPin" inputmode="numeric" maxlength="8" type="password" placeholder="••••">
+  <button class="primary" id="unlockBtn" style="margin-top:14px">Unlock</button>
+  <p class="small muted" id="lockMsg"></p>
+ </div>
+</div>
+
+<div class="app">
+<header class="top">
+ <div class="brand"><div class="logo">K</div><div><div class="eyebrow">KENNEDY PRO</div><h1 id="greeting">Good evening, Chris 👋</h1><div class="muted">Small steps. Big results.</div><div class="small muted">Pro 1.4</div></div></div>
+ <button class="icon" id="settingsBtn">⚙️</button>
+</header>
+
+<nav class="tabs">
+ <button class="tab active" data-page="home">🏠 Home</button>
+ <button class="tab" data-page="accounts">💳 Accounts</button>
+ <button class="tab" data-page="bills">📅 Bills</button>
+ <button class="tab" data-page="import">🏦 Import</button>
+ <button class="tab" data-page="goals">🎯 Goals</button>
+ <button class="tab" data-page="business">📦 Side Business</button>
+ <button class="tab" data-page="journey">🏆 Journey</button>
+</nav>
+
+<main>
+<section class="page active" id="home">
+ <section class="grid two">
+  <article class="card metric"><div class="eyebrow">TOTAL DEBT</div><strong id="homeDebt">£0.00</strong><div class="muted" id="debtChange">Tracking progress</div></article>
+  <article class="card metric"><div class="eyebrow">PAY-CYCLE BILLS</div><strong id="homeBills">£0.00</strong><div class="muted" id="homeBillsStatus">No bills added</div></article>
+ </section>
+ <section class="card">
+  <div class="head"><div><div class="eyebrow">CURRENT PAY CYCLE</div><h2 id="homeCycleTitle">Payday to payday</h2></div><span class="badge green" id="cycleDaysLeft"></span></div>
+  <div class="statusbar" style="margin-top:14px">
+   <div class="status"><span class="muted">Paid</span><strong id="cyclePaid">£0</strong></div>
+   <div class="status"><span class="muted">Still due</span><strong id="cycleRemaining">£0</strong></div>
+   <div class="status"><span class="muted">After bills</span><strong id="cycleAfterBills">£0</strong></div>
+  </div>
+  <div class="progress"><span id="cycleProgress"></span></div>
+ </section>
+ <section class="card">
+  <div class="head"><div><div class="eyebrow">UPCOMING PAYMENTS</div><h2>Next due</h2></div><span class="badge" id="monthLabel"></span></div>
+  <div id="upcoming"></div>
+ </section>
+ <section class="card">
+  <div class="eyebrow">CURRENT FOCUS</div><h2 id="focusTitle">Finish Creation</h2>
+  <p class="muted" id="focusText">Keep reducing your smallest remaining balance.</p>
+  <div class="progress"><span id="focusBar"></span></div>
+ </section>
+ <section class="card">
+  <div class="head"><div><div class="eyebrow">BANK CONNECTION</div><h2>Statement matching ready</h2></div><span class="badge amber">PDF</span></div>
+  <p class="muted">Import an HSBC PDF statement and Kennedy Pro will mark payments in the correct payday cycle—even when the cycle crosses into the next calendar month.</p>
+  <button class="secondary" data-goto="import">Import statement</button>
+ </section>
+</section>
+
+<section class="page" id="accounts">
+ <section class="card">
+  <div class="head"><div><div class="eyebrow">ACCOUNT CENTRE</div><h2>Detailed lender profiles</h2></div><button class="linkbtn" id="addAccount">+ Add</button></div>
+  <div id="accountList"></div>
+ </section>
+</section>
+
+<section class="page" id="bills">
+ <section class="card">
+  <div class="head"><div><div class="eyebrow">PAY-CYCLE BILLS</div><h2 id="billMonthTitle">Current cycle</h2></div><button class="linkbtn" id="addBill">+ Add</button></div>
+  <div class="toolbar"><button class="secondary" id="prevCycle">← Previous</button><button class="secondary" id="currentCycle">Current</button><button class="secondary" id="nextCycle">Next →</button></div>
+  <div class="statusbar" style="margin-top:14px">
+   <div class="status"><span class="muted">Total</span><strong id="bTotal">£0</strong></div>
+   <div class="status"><span class="muted">Paid</span><strong id="bPaid">£0</strong></div>
+   <div class="status"><span class="muted">Remaining</span><strong id="bRemaining">£0</strong></div>
+  </div>
+  <div id="billList"></div>
+ </section>
+</section>
+
+<section class="page" id="import">
+ <section class="card">
+  <div class="eyebrow">BANK STATEMENT IMPORT</div><h2>Automatically match paid bills</h2>
+  <p class="muted">Choose your original HSBC PDF statement or a Direct Debit CSV. Kennedy Pro will extract the Direct Debits and show them for confirmation.</p>
+  <label class="file">Choose HSBC PDF or CSV<input id="csvFile" type="file" accept=".pdf,application/pdf,.csv,text/csv" hidden></label>
+  <div class="notice small" style="margin:14px 0">PDF statements are read on your iPhone. CSV columns are detected automatically. An internet connection is needed the first time PDF support loads.</div>
+  <button class="primary" id="runImport">Review Direct Debits</button>
+  <div id="importResult" style="margin-top:14px"></div>
+ </section>
+ <section class="card">
+  <div class="eyebrow">HOW MATCHING WORKS</div>
+  <p class="muted">Kennedy Pro reads HSBC lines marked DD, shows each payment for confirmation, and adds it to your recurring Bills list. Reimporting the same bill updates it instead of creating a duplicate.</p>
+ </section>
+</section>
+
+<section class="page" id="goals">
+ <section class="card"><div class="eyebrow">HOUSE DEPOSIT</div><h2 id="depositText"></h2><div class="progress"><span id="depositBar"></span></div><button class="secondary" data-goal="deposit">Update deposit</button></section>
+ <section class="card"><div class="eyebrow">EMERGENCY FUND</div><h2 id="emergencyText"></h2><div class="progress"><span id="emergencyBar"></span></div><button class="secondary" data-goal="emergency">Update fund</button></section>
+</section>
+
+
+<section class="page" id="business">
+ <section class="grid two">
+  <article class="card metric"><div class="eyebrow">SALES THIS MONTH</div><strong id="bizSales">£0.00</strong><div class="muted" id="bizOrders">0 orders</div></article>
+  <article class="card metric"><div class="eyebrow">YOUR PROFIT</div><strong id="bizProfit">£0.00</strong><div class="muted">Your share only</div></article>
+ </section>
+ <section class="card">
+  <div class="head"><div><div class="eyebrow">MONTHLY TARGET</div><h2 id="bizTargetText">£0 / £0</h2></div><button class="linkbtn" id="editBusiness">Update</button></div>
+  <div class="progress"><span id="bizTargetBar"></span></div>
+ </section>
+ <section class="card">
+  <div class="head"><div><div class="eyebrow">SALES HISTORY</div><h2>Your eBay sales</h2></div><button class="linkbtn" id="addBusinessEntry">+ Add sale</button></div>
+  <div id="businessList"></div>
+ </section>
+</section>
+
+<section class="page" id="journey">
+ <section class="card">
+  <div class="head"><div><div class="eyebrow">MY JOURNEY</div><h2>Your financial milestones</h2></div><button class="linkbtn" id="addJourney">+ Add</button></div>
+  <div id="journeyList"></div>
+ </section>
+</section>
+</main>
+<div class="small muted" style="text-align:center;margin-top:18px">Saved privately in Safari on this iPhone. Export a backup before replacing or resetting your phone.</div>
+</div>
+
+<div class="overlay" id="editor"><div class="sheet">
+ <div class="sheethead"><h2 id="editorTitle">Edit</h2><button class="close" id="closeEditor">✕</button></div>
+ <div id="editorFields"></div>
+ <button class="primary" id="saveEditor">Save changes</button>
+ <button class="danger" id="deleteEditor" style="display:none;width:100%;margin-top:10px">Delete</button>
+</div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+(()=>{"use strict";
+const KEY="kennedyPro1",SEC="kennedyProSecurity1";
+const defaults={
+ name:"Chris",payday:20,currentBalance:0,originalDebt:25877.10,deposit:0,depositGoal:30000,emergency:0,emergencyGoal:3000,
+ business:{sales:0,profit:0,orders:0,target:10000},businessEntries:[],
+ accounts:[
+  {id:uid(),name:"HSBC loan",balance:8645.59,original:9000,apr:17.9,minPayment:0,dueDay:"",accountNumber:"",sortCode:"",reference:"",phone:"",website:"",notes:""},
+  {id:uid(),name:"Tesco loan",balance:7490,original:7490,apr:0,minPayment:0,dueDay:"",accountNumber:"",sortCode:"",reference:"",phone:"",website:"",notes:""},
+  {id:uid(),name:"Nationwide loan",balance:2163,original:2500,apr:15,minPayment:0,dueDay:"",accountNumber:"",sortCode:"",reference:"",phone:"",website:"",notes:""},
+  {id:uid(),name:"Tandem loan",balance:1957,original:1957,apr:0,minPayment:0,dueDay:"",accountNumber:"",sortCode:"",reference:"",phone:"",website:"",notes:""},
+  {id:uid(),name:"Novuna loan",balance:1020,original:1020,apr:0,minPayment:60,dueDay:"",accountNumber:"",sortCode:"",reference:"",phone:"",website:"",notes:""},
+  {id:uid(),name:"Nationwide overdraft",balance:1495.28,original:1500,apr:0,minPayment:0,dueDay:"",accountNumber:"",sortCode:"",reference:"",phone:"",website:"",notes:""},
+  {id:uid(),name:"Capital One",balance:396.31,original:663.34,apr:0,minPayment:0,dueDay:"",accountNumber:"",sortCode:"",reference:"",phone:"",website:"",notes:"Credit limit: £800"},
+  {id:uid(),name:"Creation",balance:199,original:299,apr:0,minPayment:0,dueDay:"",accountNumber:"",sortCode:"",reference:"",phone:"",website:"",notes:""},
+  {id:uid(),name:"NewDay",balance:0,original:121,apr:0,minPayment:0,dueDay:"",accountNumber:"",sortCode:"",reference:"",phone:"",website:"",notes:"Cleared July 2026"}
+ ],
+ bills:[],
+ journey:[
+  {id:uid(),date:"2026-07-18",icon:"🚀",text:"Kennedy Finance journey started"},
+  {id:uid(),date:"2026-07-25",icon:"🏆",text:"NewDay cleared completely"},
+  {id:uid(),date:"2026-07-25",icon:"💪",text:"£100 paid off Creation"}
+ ]
+};
+function uid(){return Math.random().toString(36).slice(2)+Date.now().toString(36)}
+function clone(o){return JSON.parse(JSON.stringify(o))}
+function load(){
+ let d=JSON.parse(localStorage.getItem(KEY)||"null");
+ if(d)return d;
+ const old=JSON.parse(localStorage.getItem("kennedyFinanceV5")||"null");
+ if(old){
+  const n=clone(defaults);
+  n.deposit=+old.deposit||0;n.depositGoal=+old.depositGoal||30000;n.emergency=+old.emergency||0;n.emergencyGoal=+old.emergencyGoal||3000;
+  if(Array.isArray(old.debts)) n.accounts=old.debts.map(x=>({id:uid(),name:x.name||"Account",balance:+x.balance||0,original:+x.original||(+x.balance||0),apr:+x.rate||0,minPayment:+x.minPayment||0,dueDay:x.dueDay||"",accountNumber:x.accountNumber||"",sortCode:x.sortCode||"",reference:x.reference||"",phone:x.phone||"",website:x.website||"",notes:x.notes||""}));
+  if(Array.isArray(old.wins))n.journey=old.wins.map(x=>({id:uid(),date:new Date().toISOString().slice(0,10),icon:x.icon||"⭐",text:x.text||String(x)}));
+  if(old.business){n.business={sales:+old.business.sales||0,profit:+old.business.profit||0,orders:+old.business.orders||0,target:+old.business.target||10000}}
+  localStorage.setItem(KEY,JSON.stringify(n));return n;
+ }
+ return clone(defaults)
+}
+let data=load(),edit={type:null,id:null},csvRows=[],pendingMatches=[];
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const gbp=n=>new Intl.NumberFormat("en-GB",{style:"currency",currency:"GBP"}).format(+n||0);
+function save(){localStorage.setItem(KEY,JSON.stringify(data));render()}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function isoDate(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function atNoon(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate(),12)}
+function cycleForDate(date){
+ const d=atNoon(date),payday=Math.max(1,Math.min(28,+data.payday||20));
+ let start=new Date(d.getFullYear(),d.getMonth(),payday,12);
+ if(d<start)start=new Date(d.getFullYear(),d.getMonth()-1,payday,12);
+ const next=new Date(start.getFullYear(),start.getMonth()+1,payday,12);
+ const end=new Date(next);end.setDate(end.getDate()-1);
+ return {start,end,next,key:isoDate(start)}
+}
+function cycleByOffset(offset=0){
+ const base=cycleForDate(new Date()).start,payday=Math.max(1,Math.min(28,+data.payday||20));
+ const start=new Date(base.getFullYear(),base.getMonth()+offset,payday,12);
+ const next=new Date(start.getFullYear(),start.getMonth()+1,payday,12);
+ const end=new Date(next);end.setDate(end.getDate()-1);
+ return {start,end,next,key:isoDate(start)}
+}
+function occurrenceForBill(b,cycle){
+ const day=Math.max(1,Math.min(28,+b.dueDay||1));
+ return new Date(cycle.start.getFullYear(),cycle.start.getMonth()+(day>=cycle.start.getDate()?0:1),day,12)
+}
+function cycleLabel(c){return c.start.toLocaleDateString("en-GB",{day:"numeric",month:"short"})+" – "+c.end.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})}
+function billPaidInCycle(b,key){b.paidCycles=b.paidCycles||{};return !!b.paidCycles[key]}
+function setBillPaidInCycle(b,key,value){b.paidCycles=b.paidCycles||{};if(value)b.paidCycles[key]=true;else delete b.paidCycles[key]}
+function parseStatementDateValue(s){
+ const text=String(s||"").trim();let m=text.match(/^(\d{1,2})\s+([A-Za-z]{3})\s+(\d{2,4})$/);
+ if(m){const months={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11},y=+m[3]<100?2000+(+m[3]):+m[3];return new Date(y,months[m[2].toLowerCase()],+m[1],12)}
+ m=text.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+ if(m){const y=+m[3]<100?2000+(+m[3]):+m[3];return new Date(y,+m[2]-1,+m[1],12)}
+ const d=new Date(text);return Number.isNaN(d.getTime())?null:atNoon(d)
+}
+let cycleOffset=0;
+function render(){
+ data.payday=Math.max(1,Math.min(28,+data.payday||20));data.currentBalance=+data.currentBalance||0;data.bills=data.bills||[];
+ const current=cycleByOffset(cycleOffset),live=cycleByOffset(0);
+ data.bills.forEach(b=>{b.paidCycles=b.paidCycles||{};if(b.paid===true&&!b._cycleMigrated){b.paidCycles[live.key]=true;b._cycleMigrated=true}});
+ const hour=new Date().getHours();$("#greeting").textContent=`Good ${hour<12?"morning":hour<18?"afternoon":"evening"}, ${data.name} 👋`;
+ const debt=data.accounts.reduce((s,a)=>s+(+a.balance||0),0),repaid=Math.max(0,(+data.originalDebt||0)-debt);
+ $("#homeDebt").textContent=gbp(debt);$("#debtChange").textContent=gbp(repaid)+" repaid";
+
+ const makeBills=c=>data.bills.map(b=>({...b,occurrence:occurrenceForBill(b,c),cyclePaid:billPaidInCycle(b,c.key)})).sort((a,b)=>a.occurrence-b.occurrence);
+ const cycleBills=makeBills(current),liveBills=makeBills(live);
+ const total=cycleBills.reduce((s,b)=>s+(+b.amount||0),0),paid=cycleBills.filter(b=>b.cyclePaid).reduce((s,b)=>s+(+b.amount||0),0),remaining=total-paid;
+ const liveTotal=liveBills.reduce((s,b)=>s+(+b.amount||0),0),livePaid=liveBills.filter(b=>b.cyclePaid).reduce((s,b)=>s+(+b.amount||0),0),liveRemaining=liveTotal-livePaid;
+
+ $("#homeBills").textContent=gbp(liveTotal);$("#homeBillsStatus").textContent=`${liveBills.filter(b=>b.cyclePaid).length} paid · ${liveBills.filter(b=>!b.cyclePaid).length} remaining`;
+ $("#homeCycleTitle").textContent=cycleLabel(live);
+ const today=atNoon(new Date()),daysLeft=Math.max(0,Math.ceil((live.next-today)/86400000));
+ $("#cycleDaysLeft").textContent=daysLeft+" days left";$("#cyclePaid").textContent=gbp(livePaid);$("#cycleRemaining").textContent=gbp(liveRemaining);$("#cycleAfterBills").textContent=gbp(data.currentBalance-liveRemaining);$("#cycleProgress").style.width=Math.min(100,liveTotal?livePaid/liveTotal*100:0)+"%";
+
+ $("#monthLabel").textContent=cycleLabel(live);
+ const upcoming=liveBills.filter(b=>!b.cyclePaid&&b.occurrence>=today).slice(0,4);
+ $("#upcoming").innerHTML=upcoming.length?upcoming.map(b=>`<div class="bill"><div class="row"><div><strong>${esc(b.name)}</strong><div class="muted small">Due ${b.occurrence.toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"})}</div></div><strong>${gbp(b.amount)}</strong></div></div>`).join(""):`<div class="empty">No upcoming bills in this pay cycle.</div>`;
+
+ const target=data.accounts.filter(a=>a.balance>0).sort((a,b)=>a.balance-b.balance)[0];
+ if(target){$("#focusTitle").textContent=`Finish ${target.name}`;$("#focusText").textContent=`${gbp(target.balance)} remaining`;$("#focusBar").style.width=Math.min(100,Math.max(0,(1-target.balance/Math.max(target.original,1))*100))+"%"}
+ $("#accountList").innerHTML=data.accounts.length?data.accounts.map(a=>`<div class="account"><div class="row"><div><h3>${esc(a.name)}</h3><span class="badge ${a.balance<=0?"green":""}">${a.balance<=0?"Cleared":"Active"}</span></div><strong>${gbp(a.balance)}</strong></div><div class="details"><div class="detail"><span>APR</span><strong>${(+a.apr||0).toFixed(1)}%</strong></div><div class="detail"><span>Minimum payment</span><strong>${gbp(a.minPayment)}</strong></div><div class="detail"><span>Direct Debit date</span><strong>${a.dueDay?esc(a.dueDay)+" each month":"Not set"}</strong></div><div class="detail"><span>Account number</span><strong>${esc(a.accountNumber||"Not added")}</strong></div><div class="detail"><span>Sort code</span><strong>${esc(a.sortCode||"Not added")}</strong></div><div class="detail"><span>Reference</span><strong>${esc(a.reference||"Not added")}</strong></div></div><div class="toolbar"><button class="secondary editAccount" data-id="${a.id}">View / edit details</button><button class="secondary payAccount" data-id="${a.id}">Record payment</button></div></div>`).join(""):`<div class="empty">No accounts yet.</div>`;
+
+ $("#billMonthTitle").textContent=cycleLabel(current);$("#bTotal").textContent=gbp(total);$("#bPaid").textContent=gbp(paid);$("#bRemaining").textContent=gbp(remaining);
+ const paidBills=cycleBills.filter(b=>b.cyclePaid),dueBills=cycleBills.filter(b=>!b.cyclePaid);
+ const billHtml=b=>`<div class="bill"><div class="row"><div class="bill-date"><strong>${b.occurrence.getDate()}</strong><span>${b.occurrence.toLocaleDateString("en-GB",{month:"short"})}</span></div><div style="flex:1"><h3>${esc(b.name)}</h3><div class="muted small">${b.occurrence.toLocaleDateString("en-GB",{weekday:"long"})} · Match: ${esc(b.matchWords||"not set")}</div></div><div style="text-align:right"><strong>${gbp(b.amount)}</strong><div><span class="badge ${b.cyclePaid?"green":"amber"}">${b.cyclePaid?"Paid":"Due"}</span></div></div></div><div class="toolbar"><button class="secondary toggleBill" data-id="${b.id}" data-cycle="${current.key}">${b.cyclePaid?"Mark unpaid":"Mark paid"}</button><button class="secondary editBill" data-id="${b.id}">Edit</button></div></div>`;
+ $("#billList").innerHTML=cycleBills.length?`<div class="cycle-group"><div class="cycle-group-title"><span>Paid</span><span>${paidBills.length}</span></div>${paidBills.length?paidBills.map(billHtml).join(""):`<div class="empty">Nothing marked paid yet.</div>`}</div><div class="cycle-group"><div class="cycle-group-title"><span>Upcoming</span><span>${dueBills.length}</span></div>${dueBills.length?dueBills.map(billHtml).join(""):`<div class="empty">Everything is paid for this cycle.</div>`}</div>`:`<div class="empty">No recurring bills have been added.</div>`;
+
+ $("#depositText").textContent=`${gbp(data.deposit)} / ${gbp(data.depositGoal)}`;$("#depositBar").style.width=Math.min(100,data.deposit/Math.max(data.depositGoal,1)*100)+"%";
+ $("#emergencyText").textContent=`${gbp(data.emergency)} / ${gbp(data.emergencyGoal)}`;$("#emergencyBar").style.width=Math.min(100,data.emergency/Math.max(data.emergencyGoal,1)*100)+"%";
+ data.business=data.business||{sales:0,profit:0,orders:0,target:10000};data.businessEntries=data.businessEntries||[];
+ $("#bizSales").textContent=gbp(data.business.sales);$("#bizProfit").textContent=gbp(data.business.profit);$("#bizOrders").textContent=`${data.business.orders||0} orders`;
+ $("#bizTargetText").textContent=`${gbp(data.business.sales)} / ${gbp(data.business.target)}`;$("#bizTargetBar").style.width=Math.min(100,(+data.business.sales||0)/Math.max(+data.business.target||1,1)*100)+"%";
+ $("#businessList").innerHTML=data.businessEntries.length?[...data.businessEntries].sort((a,b)=>b.date.localeCompare(a.date)).map(e=>`<div class="account"><div class="row"><div><h3>${esc(e.item||"eBay sale")}</h3><div class="muted small">${new Date(e.date+"T12:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})}${e.notes?" · "+esc(e.notes):""}</div></div><div style="text-align:right"><strong>${gbp(e.sale)}</strong><div class="badge green">Your profit ${gbp(e.profit)}</div></div></div><div class="toolbar"><button class="secondary editBusinessEntry" data-id="${e.id}">Edit</button></div></div>`).join(""):`<div class="empty">No side-business sales recorded yet.</div>`;
+ $("#journeyList").innerHTML=[...data.journey].sort((a,b)=>b.date.localeCompare(a.date)).map(j=>`<div class="journey row"><div><strong>${esc(j.icon)} ${esc(j.text)}</strong><div class="muted small">${new Date(j.date+"T12:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"})}</div></div><button class="linkbtn editJourney" data-id="${j.id}">Edit</button></div>`).join("");
+ localStorage.setItem(KEY,JSON.stringify(data));bindDynamic()
+}
+function bindDynamic(){
+ $$(".editAccount").forEach(x=>x.onclick=()=>openAccount(x.dataset.id));
+ $$(".payAccount").forEach(x=>x.onclick=()=>recordPayment(x.dataset.id));
+ $$(".toggleBill").forEach(x=>x.onclick=()=>{let b=data.bills.find(y=>y.id===x.dataset.id),key=x.dataset.cycle;setBillPaidInCycle(b,key,!billPaidInCycle(b,key));save()});
+ $$(".editBill").forEach(x=>x.onclick=()=>openBill(x.dataset.id));
+ $$(".editJourney").forEach(x=>x.onclick=()=>openJourney(x.dataset.id));
+ $$(".editBusinessEntry").forEach(x=>x.onclick=()=>openBusinessEntry(x.dataset.id));
+}
+$$(".tab").forEach(t=>t.onclick=()=>showPage(t.dataset.page));
+$$("[data-goto]").forEach(b=>b.onclick=()=>showPage(b.dataset.goto));
+$("#prevCycle").onclick=()=>{cycleOffset--;render()};
+$("#currentCycle").onclick=()=>{cycleOffset=0;render()};
+$("#nextCycle").onclick=()=>{cycleOffset++;render()};
+function showPage(id){$$(".page").forEach(p=>p.classList.toggle("active",p.id===id));$$(".tab").forEach(t=>t.classList.toggle("active",t.dataset.page===id));window.scrollTo({top:0,behavior:"smooth"})}
+function fields(arr){
+  $("#editorFields").innerHTML=arr.map(f=>{
+    const control=f.type==="textarea"
+      ? `<textarea id="f_${f.key}">${esc(f.value)}</textarea>`
+      : `<input id="f_${f.key}" type="${f.type||"text"}" value="${esc(f.value)}" ${f.inputmode?`inputmode="${f.inputmode}"`:""}>`;
+    return `<div class="field"><label>${esc(f.label)}</label>${control}</div>`;
+  }).join("");
+}
+function openEditor(title,type,id,arr,del=true){edit={type,id};$("#editorTitle").textContent=title;fields(arr);$("#deleteEditor").style.display=del?"block":"none";$("#editor").classList.add("show")}
+$("#closeEditor").onclick=()=>$("#editor").classList.remove("show");
+function val(k){return $("#f_"+k)?.value??""}
+$("#addAccount").onclick=()=>openAccount(null);
+function openAccount(id){
+ const a=id?data.accounts.find(x=>x.id===id):{name:"",balance:0,original:0,apr:0,minPayment:0,dueDay:"",accountNumber:"",sortCode:"",reference:"",phone:"",website:"",notes:""};
+ openEditor(id?"Account details":"Add account","account",id,[
+  {key:"name",label:"Lender / account name",value:a.name},{key:"balance",label:"Current balance (£)",value:a.balance,type:"number"},
+  {key:"original",label:"Original balance (£)",value:a.original,type:"number"},{key:"apr",label:"APR (%)",value:a.apr,type:"number"},
+  {key:"minPayment",label:"Minimum monthly payment (£)",value:a.minPayment,type:"number"},{key:"dueDay",label:"Direct Debit day of month",value:a.dueDay,type:"number"},
+  {key:"accountNumber",label:"Account number",value:a.accountNumber},{key:"sortCode",label:"Sort code",value:a.sortCode},
+  {key:"reference",label:"Payment reference",value:a.reference},{key:"phone",label:"Telephone",value:a.phone},
+  {key:"website",label:"Website",value:a.website},{key:"notes",label:"Notes",value:a.notes,type:"textarea"}
+ ],!!id)
+}
+function recordPayment(id){const a=data.accounts.find(x=>x.id===id),amount=prompt(`Payment made to ${a.name}:`,"");if(amount===null)return;const n=+amount;if(!Number.isFinite(n)||n<=0)return alert("Enter a valid amount.");a.balance=Math.max(0,a.balance-n);data.journey.push({id:uid(),date:new Date().toISOString().slice(0,10),icon:"💷",text:`${gbp(n)} paid to ${a.name}`});save()}
+$("#addBill").onclick=()=>openBill(null);
+function openBill(id){
+ const b=id?data.bills.find(x=>x.id===id):{name:"",amount:0,dueDay:"",matchWords:"",paidCycles:{},recurring:true};
+ openEditor(id?"Edit bill":"Add monthly bill","bill",id,[
+  {key:"name",label:"Bill name",value:b.name},{key:"amount",label:"Expected amount (£)",value:b.amount,type:"number"},
+  {key:"dueDay",label:"Due day of month",value:b.dueDay,type:"number"},{key:"matchWords",label:"Words shown on bank statement",value:b.matchWords},
+  {key:"month",label:"Month (YYYY-MM)",value:b.month}
+ ],!!id)
+}
+$("#editBusiness").onclick=()=>openEditor("Update Side Business","business","business",[
+ {key:"sales",label:"eBay sales this month (£)",value:data.business.sales,type:"number"},{key:"profit",label:"Your profit this month (£)",value:data.business.profit,type:"number"},{key:"orders",label:"Orders this month",value:data.business.orders,type:"number"},{key:"target",label:"Monthly sales target (£)",value:data.business.target,type:"number"}],false);
+$("#addBusinessEntry").onclick=()=>openBusinessEntry(null);
+function openBusinessEntry(id){const e=id?data.businessEntries.find(x=>x.id===id):{date:new Date().toISOString().slice(0,10),item:"",sale:0,profit:0,notes:""};openEditor(id?"Edit side-business sale":"Add side-business sale","businessEntry",id,[{key:"date",label:"Date",value:e.date,type:"date"},{key:"item",label:"Item / order",value:e.item},{key:"sale",label:"Sale amount (£)",value:e.sale,type:"number"},{key:"profit",label:"Your profit (£)",value:e.profit,type:"number"},{key:"notes",label:"Notes",value:e.notes,type:"textarea"}],!!id)}
+$("#addJourney").onclick=()=>openJourney(null);
+function openJourney(id){const j=id?data.journey.find(x=>x.id===id):{date:new Date().toISOString().slice(0,10),icon:"⭐",text:""};openEditor(id?"Edit milestone":"Add milestone","journey",id,[{key:"date",label:"Date",value:j.date,type:"date"},{key:"icon",label:"Icon",value:j.icon},{key:"text",label:"Milestone",value:j.text}],!!id)}
+$$("[data-goal]").forEach(b=>b.onclick=()=>{const k=b.dataset.goal,cur=data[k],goal=data[k+"Goal"];openEditor("Update "+(k==="deposit"?"house deposit":"emergency fund"),"goal",k,[{key:"current",label:"Current amount (£)",value:cur,type:"number"},{key:"goal",label:"Target (£)",value:goal,type:"number"}],false)});
+$("#saveEditor").onclick=()=>{
+ if(edit.type==="account"){let a=edit.id?data.accounts.find(x=>x.id===edit.id):{id:uid()};Object.assign(a,{name:val("name"),balance:+val("balance")||0,original:+val("original")||0,apr:+val("apr")||0,minPayment:+val("minPayment")||0,dueDay:val("dueDay"),accountNumber:val("accountNumber"),sortCode:val("sortCode"),reference:val("reference"),phone:val("phone"),website:val("website"),notes:val("notes")});if(!edit.id)data.accounts.push(a)}
+ if(edit.type==="bill"){let b=edit.id?data.bills.find(x=>x.id===edit.id):{id:uid(),paid:false,paidDate:""};Object.assign(b,{name:val("name"),amount:+val("amount")||0,dueDay:val("dueDay"),matchWords:val("matchWords"),recurring:true});if(!edit.id)data.bills.push(b)}
+ if(edit.type==="business"){data.business={sales:+val("sales")||0,profit:+val("profit")||0,orders:+val("orders")||0,target:+val("target")||0}}
+ if(edit.type==="businessEntry"){let e=edit.id?data.businessEntries.find(x=>x.id===edit.id):{id:uid()};Object.assign(e,{date:val("date"),item:val("item"),sale:+val("sale")||0,profit:+val("profit")||0,notes:val("notes")});if(!edit.id)data.businessEntries.push(e)}
+ if(edit.type==="journey"){let j=edit.id?data.journey.find(x=>x.id===edit.id):{id:uid()};Object.assign(j,{date:val("date"),icon:val("icon")||"⭐",text:val("text")});if(!edit.id)data.journey.push(j)}
+ if(edit.type==="goal"){data[edit.id]=+val("current")||0;data[edit.id+"Goal"]=+val("goal")||0}
+ $("#editor").classList.remove("show");save()
+};
+$("#deleteEditor").onclick=()=>{if(!confirm("Delete this item?"))return;if(edit.type==="account")data.accounts=data.accounts.filter(x=>x.id!==edit.id);if(edit.type==="bill")data.bills=data.bills.filter(x=>x.id!==edit.id);if(edit.type==="businessEntry")data.businessEntries=data.businessEntries.filter(x=>x.id!==edit.id);if(edit.type==="journey")data.journey=data.journey.filter(x=>x.id!==edit.id);$("#editor").classList.remove("show");save()};
+function parseCSV(text){
+ const lines=text.replace(/\r/g,"").split("\n").filter(x=>x.trim().length);
+ if(!lines.length)return[];
+ const split=line=>{let out=[],cur="",q=false;for(let i=0;i<line.length;i++){let c=line[i];if(c==='"'){if(q&&line[i+1]==='"'){cur+='"';i++}else q=!q}else if(c===","&&!q){out.push(cur);cur=""}else cur+=c}out.push(cur);return out};
+ const headers=split(lines[0]).map(x=>x.trim());
+ return lines.slice(1).map(l=>{let a=split(l),o={};headers.forEach((h,i)=>o[h]=a[i]??"");return o})
+}
+function normaliseHeader(h){return String(h||"").trim().toLowerCase().replace(/[^a-z0-9]/g,"")}
+function detectColumn(headers, options){
+ const normal=headers.map(h=>[h,normaliseHeader(h)]);
+ for(const opt of options){
+  const found=normal.find(([,n])=>n===opt || n.includes(opt));
+  if(found)return found[0];
+ }
+ return ""
+}
+function parseMoney(v){return Math.abs(parseFloat(String(v??"").replace(/[£,\s]/g,"")))||0}
+function parseDateToDay(v){
+ const s=String(v||"").trim();
+ const m=s.match(/^(\d{1,2})[\/\-]/);
+ if(m)return String(+m[1]);
+ const d=new Date(s);
+ return Number.isNaN(d.getTime())?"":String(d.getDate())
+}
+let importRows=[];
+function cleanPdfDescription(s){
+ return String(s||"").replace(/\s+/g," ").trim().replace(/\s+\d{1,3}(?:,\d{3})*\.\d{2}\s*$/,"").trim()
+}
+async function extractPdfLines(file){
+ if(!window.pdfjsLib)throw new Error("PDF reader did not load. Check your internet connection and reload Kennedy Pro.");
+ pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+ const bytes=new Uint8Array(await file.arrayBuffer());
+ const pdf=await pdfjsLib.getDocument({data:bytes}).promise;
+ const lines=[];
+ for(let p=1;p<=pdf.numPages;p++){
+  const page=await pdf.getPage(p);
+  const content=await page.getTextContent();
+  const groups=[];
+  for(const item of content.items){
+   const y=Math.round(item.transform[5]*2)/2,x=item.transform[4];
+   let group=groups.find(g=>Math.abs(g.y-y)<2);
+   if(!group){group={y,items:[]};groups.push(group)}
+   group.items.push({x,text:item.str});
+  }
+  groups.sort((a,b)=>b.y-a.y);
+  for(const g of groups){
+   g.items.sort((a,b)=>a.x-b.x);
+   const line=g.items.map(i=>i.text).join(" ").replace(/\s+/g," ").trim();
+   if(line)lines.push(line);
+  }
+ }
+ return lines
+}
+function parseHsbcDirectDebits(lines){
+ const out=[];let currentDate="";
+ for(const raw of lines){
+  let line=String(raw||"").replace(/\s+/g," ").trim();
+  const dateMatch=line.match(/^(\d{1,2}\s+[A-Za-z]{3}\s+\d{2})\s+/);
+  if(dateMatch){currentDate=dateMatch[1];line=line.slice(dateMatch[0].length)}
+  const ddIndex=line.search(/\bDD\b/);
+  if(ddIndex<0)continue;
+  line=line.slice(ddIndex+2).trim();
+  const amountMatch=line.match(/(?:^|\s)(\d{1,3}(?:,\d{3})*\.\d{2})(?:\s|$)/);
+  if(!amountMatch)continue;
+  const amount=parseMoney(amountMatch[1]);
+  let description=line.slice(0,amountMatch.index).trim();
+  description=cleanPdfDescription(description);
+  if(!description||!amount)continue;
+  if(/BALANCE|PAID OUT|PAID IN/i.test(description))continue;
+  out.push({date:currentDate,description,amount})
+ }
+ const dedup=[];
+ for(const x of out){
+  const key=[x.date,x.description.toLowerCase(),x.amount.toFixed(2)].join("|");
+  if(!dedup.some(y=>y.key===key))dedup.push({...x,key})
+ }
+ return dedup.map(({key,...x})=>x)
+}
+function showImportPreview(imported, sourceName){
+ if(!imported.length){
+  $("#importResult").innerHTML=`<div class="empty">No Direct Debits were found. Make sure this is an original HSBC statement PDF rather than a screenshot.</div>`;
+  return
+ }
+ pendingMatches=imported;
+ $("#importResult").innerHTML=`<div class="notice">${imported.length} Direct Debit${imported.length===1?"":"s"} found in ${esc(sourceName)}. Untick anything you do not want to add.</div>`+
+ imported.map((x,i)=>`<div class="bill"><div class="row"><div><strong>${esc(x.description)}</strong><div class="muted small">${esc(x.date||"Date not supplied")}</div></div><strong>${gbp(x.amount)}</strong></div><label><input type="checkbox" class="confirmImport" data-i="${i}" checked> Add as recurring bill</label></div>`).join("")+
+ `<button class="primary" id="applyImports">Add selected bills</button>`;
+ $("#applyImports").onclick=()=>{
+  let added=0,updated=0;
+  $$(".confirmImport:checked").forEach(c=>{
+   const x=pendingMatches[+c.dataset.i];
+   const key=x.description.toLowerCase().replace(/\s+/g," ").trim();
+   const existing=data.bills.find(b=>String(b.name).toLowerCase().replace(/\s+/g," ").trim()===key);
+   if(existing){
+    existing.amount=x.amount;
+    existing.dueDay=parseDateToDay(x.date)||existing.dueDay;
+    existing.matchWords=x.description;
+    const txDate=parseStatementDateValue(x.date),txCycle=cycleForDate(txDate||new Date());
+    setBillPaidInCycle(existing,txCycle.key,true);
+    existing.paidDate=txDate?isoDate(txDate):isoDate(new Date());
+    existing.recurring=true;
+    updated++;
+   }else{
+    const txDate=parseStatementDateValue(x.date),txCycle=cycleForDate(txDate||new Date());
+    const nb={id:uid(),name:x.description,amount:x.amount,dueDay:parseDateToDay(x.date),matchWords:x.description,paidCycles:{},paidDate:txDate?isoDate(txDate):isoDate(new Date()),recurring:true};
+    setBillPaidInCycle(nb,txCycle.key,true);data.bills.push(nb);added++;
+   }
+  });
+  save();
+  showPage("bills");
+  setTimeout(()=>alert(`${added} bill${added===1?"":"s"} added and ${updated} updated.`),50)
+ }
+}
+$("#csvFile").onchange=async e=>{
+ const f=e.target.files[0];if(!f)return;
+ importRows=[];csvRows=[];
+ $("#importResult").innerHTML=`<div class="notice">Reading ${esc(f.name)}…</div>`;
+ try{
+  if(f.type==="application/pdf"||f.name.toLowerCase().endsWith(".pdf")){
+   const lines=await extractPdfLines(f);
+   importRows=parseHsbcDirectDebits(lines);
+   $("#importResult").innerHTML=`<div class="notice">${importRows.length} Direct Debit${importRows.length===1?"":"s"} extracted from the PDF. Tap Review Direct Debits.</div>`;
+  }else{
+   csvRows=parseCSV(await f.text());
+   if(!csvRows.length)throw new Error("That CSV did not contain any transactions.");
+   const headers=Object.keys(csvRows[0]);
+   const dateCol=detectColumn(headers,["date","transactiondate"]);
+   const descCol=detectColumn(headers,["description","details","merchant","name"]);
+   const amountCol=detectColumn(headers,["amount","moneyout","paidout","debit"]);
+   if(!descCol||!amountCol)throw new Error("Kennedy Pro could not detect the Description or Amount columns.");
+   importRows=csvRows.map(r=>({date:dateCol?r[dateCol]:"",description:String(r[descCol]||"").trim(),amount:parseMoney(r[amountCol])})).filter(x=>x.description&&x.amount>0);
+   $("#importResult").innerHTML=`<div class="notice">${importRows.length} Direct Debit${importRows.length===1?"":"s"} loaded from the CSV. Tap Review Direct Debits.</div>`;
+  }
+ }catch(err){
+  $("#importResult").innerHTML=`<div class="empty">${esc(err.message||"The statement could not be read.")}</div>`
+ }
+};
+$("#runImport").onclick=()=>{
+ if(!importRows.length)return alert("Choose an HSBC PDF statement or Direct Debit CSV first.");
+ showImportPreview(importRows, $("#csvFile").files[0]?.name||"your statement")
+};
+$("#settingsBtn").onclick=()=>openSettings();
+function openSettings(){
+ openEditor("Settings","settings","settings",[
+  {key:"name",label:"Your name",value:data.name},{key:"payday",label:"Usual payday (1–28)",value:data.payday||20,type:"number"},{key:"currentBalance",label:"Current bank balance (£)",value:data.currentBalance||0,type:"number"},{key:"passcode",label:"Set or replace passcode (4–8 digits)",value:"",type:"password"}
+ ],false);
+ $("#editorFields").insertAdjacentHTML("beforeend",`<div class="toolbar"><button class="secondary" id="exportBtn">Export backup</button><button class="secondary" id="importBackupBtn">Restore backup</button></div><input type="file" id="backupFile" accept=".json" hidden><div class="notice small">Live bank connections are not stored here. Open Banking will require a secure hosted service in a later Pro release.</div>`);
+ $("#exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="kennedy-pro-backup.json";a.click();URL.revokeObjectURL(a.href)};
+ $("#importBackupBtn").onclick=()=>$("#backupFile").click();
+ $("#backupFile").onchange=async e=>{try{let d=JSON.parse(await e.target.files[0].text());if(!d.accounts||!d.bills)throw Error();data=d;save();$("#editor").classList.remove("show")}catch{alert("That backup file could not be read.")}}
+}
+const originalSave=$("#saveEditor").onclick;
+$("#saveEditor").onclick=()=>{
+ if(edit.type==="settings"){data.name=val("name")||"Chris";data.payday=Math.max(1,Math.min(28,+val("payday")||20));data.currentBalance=+val("currentBalance")||0;cycleOffset=0;const p=val("passcode");if(p&&!/^\d{4,8}$/.test(p))return alert("Passcode must be 4–8 numbers.");if(p)localStorage.setItem(SEC,JSON.stringify({pin:p}));$("#editor").classList.remove("show");save();return}
+ originalSave()
+};
+function security(){let s=JSON.parse(localStorage.getItem(SEC)||"null");if(s?.pin)$("#lock").classList.add("show")}
+$("#unlockBtn").onclick=()=>{let s=JSON.parse(localStorage.getItem(SEC)||"null");if($("#unlockPin").value===s?.pin){$("#lock").classList.remove("show");$("#unlockPin").value="";$("#lockMsg").textContent=""}else $("#lockMsg").textContent="That passcode was not correct."};
+document.addEventListener("visibilitychange",()=>{if(document.hidden)return;let s=JSON.parse(localStorage.getItem(SEC)||"null");if(s?.pin)$("#lock").classList.add("show")});
+if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js").catch(()=>{});
+render();security();
+})();
+</script>
+</body>
+</html>
