@@ -319,6 +319,7 @@ function ensureAccountAutomation(a){
 function accountBaseDate(a){const d=parseStatementDateValue(a.confirmedDate);return d||new Date(2000,0,1,12)}
 function estimateAccount(a,until=new Date()){
  ensureAccountAutomation(a);
+ if(!a.confirmedDate)return {balance:+a.confirmedBalance||0,interest:0};
  let bal=+a.confirmedBalance||0, apr=+a.apr||0, last=accountBaseDate(a);
  const end=atNoon(until);
  const events=(a.paymentLedger||[]).map(e=>({...e,dateObj:parseStatementDateValue(e.date)})).filter(e=>e.dateObj&&e.dateObj>=last&&e.dateObj<=end).sort((x,y)=>x.dateObj-y.dateObj);
