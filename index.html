@@ -89,7 +89,7 @@ select{width:100%;background:#071a2d;color:var(--text);border:1px solid #3c6487;
 
 <div class="app">
 <header class="top">
- <div class="brand"><div class="logo">K</div><div><div class="eyebrow">KENNEDY PRO</div><h1 id="greeting">Good evening, Chris 👋</h1><div class="muted">Small steps. Big results.</div><div class="small muted">Pro 1.6.2 · Debt Freedom</div></div></div>
+ <div class="brand"><div class="logo">K</div><div><div class="eyebrow">KENNEDY PRO</div><h1 id="greeting">Good evening, Chris 👋</h1><div class="muted">Small steps. Big results.</div><div class="small muted">Pro 1.6.3 · Debt Freedom</div></div></div>
  <button class="icon" id="settingsBtn">⚙️</button>
 </header>
 
@@ -149,6 +149,7 @@ select{width:100%;background:#071a2d;color:var(--text);border:1px solid #3c6487;
 <section class="page" id="bills">
  <section class="card">
   <div class="head"><div><div class="eyebrow">PAY-CYCLE BILLS</div><h2 id="billMonthTitle">Current cycle</h2></div><button class="linkbtn" id="addBill">+ Add</button></div>
+   <button class="secondary" id="restoreBills" style="width:100%;margin-top:12px">Restore my 20 recurring bills</button>
   <div class="toolbar"><button class="secondary" id="prevCycle">← Previous</button><button class="secondary" id="currentCycle">Current</button><button class="secondary" id="nextCycle">Next →</button></div>
   <div class="statusbar" style="margin-top:14px">
    <div class="status"><span class="muted">Total</span><strong id="bTotal">£0</strong></div>
@@ -426,6 +427,7 @@ function applyCreditBaseline(){
    }
   });
 
+  ensureSeptemberBills();
   localStorage.setItem(KEY,JSON.stringify(data));
   render();
   alert("13 September balances applied successfully. Your bills and Side Business data were kept.");
@@ -437,20 +439,62 @@ function applyCreditBaseline(){
 const DEBT_FREEDOM_EXTRA=500;
 const DEBT_FREEDOM_ORDER=["Nationwide overdraft","Nationwide loan","Novuna loan","Tandem loan","Tesco loan","HSBC loan"];
 const DEBT_FREEDOM_START=21002;
+
+const SEPTEMBER_BILLS=[
+ {name:"Octopus Energy",amount:170.00,dueDay:"20",matchWords:"OCTOPUS ENERGY"},
+ {name:"Capital One",amount:37.03,dueDay:"21",matchWords:"CAPITAL ONE"},
+ {name:"HSBC PLC Loans",amount:278.89,dueDay:"21",matchWords:"HSBC PLC LOANS"},
+ {name:"Mortgage 3913",amount:610.63,dueDay:"21",matchWords:"MTG 40078858353913"},
+ {name:"Mortgage 3867",amount:171.63,dueDay:"21",matchWords:"MTG 40078888353867"},
+ {name:"Royal London",amount:11.39,dueDay:"21",matchWords:"ROYAL LONDON"},
+ {name:"Tesco Bank",amount:144.89,dueDay:"21",matchWords:"TESCO BANK"},
+ {name:"Wigan MBC",amount:143.00,dueDay:"21",matchWords:"WIGAN MBC"},
+ {name:"NewDay Ltd",amount:17.31,dueDay:"24",matchWords:"NEWDAY LTD"},
+ {name:"Premfina / Van Insurance",amount:65.47,dueDay:"24",matchWords:"PREMFINA"},
+ {name:"Lemonade Insurance",amount:28.74,dueDay:"24",matchWords:"LEMONADE"},
+ {name:"Ring Solo Plan",amount:9.98,dueDay:"26",matchWords:"RING"},
+ {name:"EE Limited",amount:13.98,dueDay:"27",matchWords:"EE LIMITED"},
+ {name:"Amazon",amount:8.99,dueDay:"27",matchWords:"AMAZON"},
+ {name:"Virgin Media",amount:47.00,dueDay:"27",matchWords:"VIRGIN MEDIA"},
+ {name:"United Utilities W",amount:33.80,dueDay:"31",matchWords:"UNITED UTILITIES"},
+ {name:"DVLA-MD66RKU",amount:30.18,dueDay:"3",matchWords:"DVLA-MD66RKU"},
+ {name:"NBS Personal Loans",amount:337.90,dueDay:"3",matchWords:"NBS PERSONAL LOANS"},
+ {name:"Tandem Bank Ltd",amount:85.52,dueDay:"3",matchWords:"TANDEM BANK LTD"},
+ {name:"Novuna Personal FI",amount:60.00,dueDay:"7",matchWords:"NOVUNA PERSONAL FI"}
+];
+
+function planBalanceForAccount(a){
+ ensureAccountAutomation(a);
+ let bal=+a.confirmedBalance||0;
+ const confirmed=parseStatementDateValue(a.confirmedDate);
+ for(const e of (a.paymentLedger||[])){
+  const d=parseStatementDateValue(e.date);
+  if(d && (!confirmed || d>=confirmed)) bal-=+e.amount||0;
+ }
+ return Math.max(0,bal);
+}
 function debtFreedomAccounts(){
  return DEBT_FREEDOM_ORDER.map(name=>data.accounts.find(a=>normName(a.name)===normName(name))).filter(Boolean)
 }
 function debtFreedomTarget(){
- return debtFreedomAccounts().map(a=>({a,bal:estimateAccount(a).balance})).find(x=>x.bal>0)
+ return debtFreedomAccounts().map(a=>({a,bal:planBalanceForAccount(a)})).find(x=>x.bal>0)
+}
+function ensureSeptemberBills(){
+ data.bills=Array.isArray(data.bills)?data.bills:[];
+ if(data.bills.length) return false;
+ data.bills=SEPTEMBER_BILLS.map(src=>{
+  const a=autoMatchAccountForBill(src.name+" "+src.matchWords);
+  return {id:uid(),name:src.name,amount:src.amount,dueDay:src.dueDay,matchWords:src.matchWords,paidCycles:{},recurring:true,linkedAccountId:a?a.id:""};
+ });
+ return true;
 }
 
 function render(){
- data.payday=Math.max(1,Math.min(28,+data.payday||20));data.currentBalance=+data.currentBalance||0;data.bills=data.bills||[];data.accounts=(data.accounts||[]).map(ensureAccountAutomation);
+ data.payday=Math.max(1,Math.min(28,+data.payday||20));data.currentBalance=+data.currentBalance||0;data.bills=data.bills||[];data.accounts=(data.accounts||[]).map(ensureAccountAutomation);ensureSeptemberBills();
  const current=cycleByOffset(cycleOffset),live=cycleByOffset(0);
  data.bills.forEach(b=>{b.paidCycles=b.paidCycles||{};if(b.paid===true&&!b._cycleMigrated){b.paidCycles[live.key]=true;b._cycleMigrated=true}});
  const hour=new Date().getHours();$("#greeting").textContent=`Good ${hour<12?"morning":hour<18?"afternoon":"evening"}, ${data.name} 👋`;
- const planNames=["Nationwide overdraft","Nationwide loan","Novuna loan","Tandem loan","Tesco loan","HSBC loan"].map(normName);
- const debt=data.accounts.filter(a=>planNames.includes(normName(a.name))).reduce((s,a)=>s+estimateAccount(a).balance,0),repaid=Math.max(0,(+data.originalDebt||0)-debt);
+ const debt=debtFreedomAccounts().reduce((s,a)=>s+planBalanceForAccount(a),0),repaid=Math.max(0,DEBT_FREEDOM_START-debt);
  $("#homeDebt").textContent=gbp(debt);$("#debtChange").textContent=gbp(repaid)+" repaid";
 
  const makeBills=c=>data.bills.map(b=>({...b,occurrence:occurrenceForBill(b,c),cyclePaid:billPaidInCycle(b,c.key)})).sort((a,b)=>a.occurrence-b.occurrence);
@@ -467,7 +511,7 @@ function render(){
  const upcoming=liveBills.filter(b=>!b.cyclePaid&&b.occurrence>=today).slice(0,4);
  $("#upcoming").innerHTML=upcoming.length?upcoming.map(b=>`<div class="bill"><div class="row"><div><strong>${esc(b.name)}</strong><div class="muted small">Due ${b.occurrence.toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"})}</div></div><strong>${gbp(b.amount)}</strong></div></div>`).join(""):`<div class="empty">No upcoming bills in this pay cycle.</div>`;
 
- const freedomAccounts=debtFreedomAccounts(),freedomDebt=freedomAccounts.reduce((s,a)=>s+estimateAccount(a).balance,0),freedomTarget=debtFreedomTarget();
+ const freedomAccounts=debtFreedomAccounts(),freedomDebt=freedomAccounts.reduce((s,a)=>s+planBalanceForAccount(a),0),freedomTarget=debtFreedomTarget();
  if($("#freedomDebt"))$("#freedomDebt").textContent=gbp(freedomDebt);
  if($("#freedomExtra"))$("#freedomExtra").textContent=gbp(DEBT_FREEDOM_EXTRA);
  if($("#freedomTarget"))$("#freedomTarget").textContent=freedomTarget?freedomTarget.a.name:"Debt free 🏆";
@@ -560,6 +604,13 @@ function recordPayment(id){
  ensureAccountAutomation(a);a.paymentLedger.push({id:"manual:"+uid(),date,amount:n,source:"Manual extra payment"});
  data.journey.push({id:uid(),date:date||isoDate(new Date()),icon:"💷",text:`${gbp(n)} extra payment to ${a.name}`});save()
 }
+$("#restoreBills").onclick=()=>{
+ if(data.bills.length && !confirm("Replace the current recurring bills with your saved 20-bill baseline (£2,306.33)?"))return;
+ data.bills=[];
+ ensureSeptemberBills();
+ save();
+ alert("Your 20 recurring bills have been restored. Total baseline: £2,306.33.");
+};
 $("#addBill").onclick=()=>openBill(null);
 function openBill(id){
  const b=id?data.bills.find(x=>x.id===id):{name:"",amount:0,dueDay:"",matchWords:"",paidCycles:{},recurring:true,linkedAccountId:""};
