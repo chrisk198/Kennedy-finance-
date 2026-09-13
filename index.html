@@ -89,7 +89,7 @@ select{width:100%;background:#071a2d;color:var(--text);border:1px solid #3c6487;
 
 <div class="app">
 <header class="top">
- <div class="brand"><div class="logo">K</div><div><div class="eyebrow">KENNEDY PRO</div><h1 id="greeting">Good evening, Chris 👋</h1><div class="muted">Small steps. Big results.</div><div class="small muted">Pro 1.6.3 · Debt Freedom</div></div></div>
+ <div class="brand"><div class="logo">K</div><div><div class="eyebrow">KENNEDY PRO</div><h1 id="greeting">Good evening, Chris 👋</h1><div class="muted">Small steps. Big results.</div><div class="small muted">Pro 1.6.4 · Debt Freedom</div></div></div>
  <button class="icon" id="settingsBtn">⚙️</button>
 </header>
 
@@ -484,9 +484,9 @@ function planBalanceForAccount(a){
  const confirmed=parseStatementDateValue(a.confirmedDate);
  for(const e of (a.paymentLedger||[])){
   const d=parseStatementDateValue(e.date);
-  if(d && (!confirmed || d>=confirmed)) bal-=+e.amount||0;
+  if(d && (!confirmed || d>confirmed))bal-=+e.amount||0;
  }
- return Math.max(0,bal);
+ return Math.max(0,bal)
 }
 function debtFreedomAccounts(){
  return DEBT_FREEDOM_ORDER.map(name=>data.accounts.find(a=>normName(a.name)===normName(name))).filter(Boolean)
@@ -504,12 +504,80 @@ function ensureSeptemberBills(){
  return true;
 }
 
+
+const SEPTEMBER_TAKE_HOME=3607.64;
+const SEPTEMBER_FINAL_BILLS=[
+ {name:"Octopus Energy",amount:170.00,dueDay:"20",matchWords:"OCTOPUS ENERGY"},
+ {name:"Capital One",amount:37.03,dueDay:"21",matchWords:"CAPITAL ONE"},
+ {name:"HSBC PLC Loans",amount:278.89,dueDay:"21",matchWords:"HSBC PLC LOANS"},
+ {name:"Mortgage 3913",amount:610.63,dueDay:"21",matchWords:"MTG 40078858353913"},
+ {name:"Mortgage 3867",amount:171.63,dueDay:"21",matchWords:"MTG 40078888353867"},
+ {name:"Royal London",amount:11.39,dueDay:"21",matchWords:"ROYAL LONDON"},
+ {name:"Tesco Bank",amount:144.89,dueDay:"21",matchWords:"TESCO BANK"},
+ {name:"Wigan MBC",amount:143.00,dueDay:"21",matchWords:"WIGAN MBC"},
+ {name:"NewDay Ltd",amount:17.31,dueDay:"24",matchWords:"NEWDAY LTD"},
+ {name:"Premfina / Van Insurance",amount:65.47,dueDay:"24",matchWords:"PREMFINA"},
+ {name:"Lemonade Insurance",amount:28.74,dueDay:"24",matchWords:"LEMONADE"},
+ {name:"Ring Solo Plan",amount:9.98,dueDay:"26",matchWords:"RING"},
+ {name:"EE Limited",amount:13.98,dueDay:"27",matchWords:"EE LIMITED"},
+ {name:"Amazon",amount:8.99,dueDay:"27",matchWords:"AMAZON"},
+ {name:"Virgin Media",amount:47.00,dueDay:"27",matchWords:"VIRGIN MEDIA"},
+ {name:"United Utilities W",amount:33.80,dueDay:"31",matchWords:"UNITED UTILITIES"},
+ {name:"DVLA-MD66RKU",amount:30.18,dueDay:"3",matchWords:"DVLA-MD66RKU"},
+ {name:"NBS Personal Loans",amount:337.90,dueDay:"3",matchWords:"NBS PERSONAL LOANS"},
+ {name:"Tandem Bank Ltd",amount:85.52,dueDay:"3",matchWords:"TANDEM BANK LTD"},
+ {name:"Novuna Personal FI",amount:60.00,dueDay:"7",matchWords:"NOVUNA PERSONAL FI"}
+];
+const SEPTEMBER_FINAL_DEBTS=[
+ {name:"Nationwide overdraft",balance:1495,minPayment:0,type:"Overdraft",apr:0,aliases:["NATIONWIDE OVERDRAFT","6616"]},
+ {name:"Nationwide loan",balance:1534,minPayment:338,type:"Unsecured loan",apr:15,aliases:["NBS PERSONAL LOANS","701"]},
+ {name:"Novuna loan",balance:900,minPayment:60,type:"Fixed-term credit",apr:0,aliases:["NOVUNA PERSONAL FI","5768"]},
+ {name:"Tandem loan",balance:1786,minPayment:85,type:"Unsecured loan",apr:0,aliases:["TANDEM BANK LTD","8612"]},
+ {name:"Tesco loan",balance:7200,minPayment:145,type:"Unsecured loan",apr:15.2,aliases:["TESCO BANK","3526"]},
+ {name:"HSBC loan",balance:8087,minPayment:278,type:"Unsecured loan",apr:17.9,aliases:["HSBC PLC LOANS","4008"]}
+];
+function applySeptemberFinalFix(){
+ if(data._sep2026FinalFix164)return;
+ data.accounts=Array.isArray(data.accounts)?data.accounts:[];
+ data.bills=Array.isArray(data.bills)?data.bills:[];
+ for(const src of SEPTEMBER_FINAL_DEBTS){
+  let a=data.accounts.find(x=>normName(x?.name)===normName(src.name));
+  if(!a){
+   a={id:uid(),name:src.name,balance:src.balance,confirmedBalance:src.balance,confirmedDate:"2026-09-13",
+      original:src.balance,apr:src.apr,minPayment:src.minPayment,dueDay:"",type:src.type,aliases:src.aliases,
+      accountNumber:"",sortCode:"",reference:"",phone:"",website:"",notes:"",paymentLedger:[]};
+   data.accounts.push(a);
+  }else{
+   ensureAccountAutomation(a);
+   a.name=src.name;a.type=src.type;a.confirmedBalance=src.balance;a.balance=src.balance;
+   a.confirmedDate="2026-09-13";a.minPayment=src.minPayment;a.apr=src.apr;
+   a.aliases=[...(a.aliases||[]),...src.aliases].filter((v,i,arr)=>v&&arr.indexOf(v)===i);
+  }
+ }
+ for(const nm of ["Capital One","Creation","NewDay","PayPal Credit"]){
+  const a=data.accounts.find(x=>normName(x?.name)===normName(nm));
+  if(a){ensureAccountAutomation(a);a.confirmedBalance=0;a.balance=0;a.confirmedDate="2026-09-13";}
+ }
+ const oldBills=data.bills||[];
+ data.bills=SEPTEMBER_FINAL_BILLS.map(src=>{
+  const old=oldBills.find(b=>normName(b.name)===normName(src.name)||normName(b.matchWords)===normName(src.matchWords));
+  const a=autoMatchAccountForBill(src.name+" "+src.matchWords);
+  return {id:old?.id||uid(),name:src.name,amount:src.amount,dueDay:src.dueDay,matchWords:src.matchWords,
+    paidCycles:old?.paidCycles||{},recurring:true,linkedAccountId:a?a.id:(old?.linkedAccountId||"")};
+ });
+ data.monthlyIncome=SEPTEMBER_TAKE_HOME;
+ data.currentBalance=SEPTEMBER_TAKE_HOME;
+ data._sep2026FinalFix164=true;
+ localStorage.setItem(KEY,JSON.stringify(data));
+}
+
 function render(){
+ applySeptemberFinalFix();
  data.payday=Math.max(1,Math.min(28,+data.payday||20));data.currentBalance=+data.currentBalance||0;data.bills=data.bills||[];data.accounts=(data.accounts||[]).map(ensureAccountAutomation);ensureSeptemberBills();
  const current=cycleByOffset(cycleOffset),live=cycleByOffset(0);
  data.bills.forEach(b=>{b.paidCycles=b.paidCycles||{};if(b.paid===true&&!b._cycleMigrated){b.paidCycles[live.key]=true;b._cycleMigrated=true}});
  const hour=new Date().getHours();$("#greeting").textContent=`Good ${hour<12?"morning":hour<18?"afternoon":"evening"}, ${data.name} 👋`;
- const debt=debtFreedomAccounts().reduce((s,a)=>s+planBalanceForAccount(a),0),repaid=Math.max(0,DEBT_FREEDOM_START-debt);
+ const debt=debtFreedomAccounts().reduce((s,a)=>s+planBalanceForAccount(a),0),repaid=Math.max(0,21002-debt);
  $("#homeDebt").textContent=gbp(debt);$("#debtChange").textContent=gbp(repaid)+" repaid";
 
  const makeBills=c=>data.bills.map(b=>({...b,occurrence:occurrenceForBill(b,c),cyclePaid:billPaidInCycle(b,c.key)})).sort((a,b)=>a.occurrence-b.occurrence);
@@ -520,7 +588,7 @@ function render(){
  $("#homeBills").textContent=gbp(liveTotal);$("#homeBillsStatus").textContent=`${liveBills.filter(b=>b.cyclePaid).length} paid · ${liveBills.filter(b=>!b.cyclePaid).length} remaining`;
  $("#homeCycleTitle").textContent=cycleLabel(live);
  const today=atNoon(new Date()),daysLeft=Math.max(0,Math.ceil((live.next-today)/86400000));
- $("#cycleDaysLeft").textContent=daysLeft+" days left";$("#cyclePaid").textContent=gbp(livePaid);$("#cycleRemaining").textContent=gbp(liveRemaining);$("#cycleAfterBills").textContent=gbp(data.currentBalance-liveRemaining);$("#cycleProgress").style.width=Math.min(100,liveTotal?livePaid/liveTotal*100:0)+"%";
+ $("#cycleDaysLeft").textContent=daysLeft+" days left";$("#cyclePaid").textContent=gbp(livePaid);$("#cycleRemaining").textContent=gbp(liveRemaining);$("#cycleAfterBills").textContent=gbp((+data.monthlyIncome||+data.currentBalance||0)-liveTotal);$("#cycleProgress").style.width=Math.min(100,liveTotal?livePaid/liveTotal*100:0)+"%";
 
  $("#monthLabel").textContent=cycleLabel(live);
  const upcoming=liveBills.filter(b=>!b.cyclePaid&&b.occurrence>=today).slice(0,4);
