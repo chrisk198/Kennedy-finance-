@@ -89,7 +89,7 @@ select{width:100%;background:#071a2d;color:var(--text);border:1px solid #3c6487;
 
 <div class="app">
 <header class="top">
- <div class="brand"><div class="logo">K</div><div><div class="eyebrow">KENNEDY PRO</div><h1 id="greeting">Good evening, Chris 👋</h1><div class="muted">Small steps. Big results.</div><div class="small muted">Pro 1.5</div></div></div>
+ <div class="brand"><div class="logo">K</div><div><div class="eyebrow">KENNEDY PRO</div><h1 id="greeting">Good evening, Chris 👋</h1><div class="muted">Small steps. Big results.</div><div class="small muted">Pro 1.6 · Debt Freedom</div></div></div>
  <button class="icon" id="settingsBtn">⚙️</button>
 </header>
 
@@ -138,7 +138,7 @@ select{width:100%;background:#071a2d;color:var(--text);border:1px solid #3c6487;
  <section class="card">
   <div class="head"><div><div class="eyebrow">DEBT AUTOMATION</div><h2>Confirmed vs estimated balances</h2></div><span class="badge green">NEW</span></div>
   <p class="muted">Kennedy Pro keeps the lender's last confirmed balance, then estimates the live balance from linked payments and APR. The estimate is clearly labelled and can be reset whenever you upload a newer lender or credit-file balance.</p>
-  <button class="secondary" id="applyCreditBaseline">Apply 13 Aug credit-file baseline</button>
+  <button class="secondary" id="applyCreditBaseline">Apply 13 Sep credit-file baseline</button>
  </section>
  <section class="card">
   <div class="head"><div><div class="eyebrow">ACCOUNT CENTRE</div><h2>Detailed lender profiles</h2></div><button class="linkbtn" id="addAccount">+ Add</button></div>
@@ -291,20 +291,19 @@ function parseStatementDateValue(s){
 }
 let cycleOffset=0;
 
-const CREDIT_BASELINE_DATE="2026-08-13";
+const CREDIT_BASELINE_DATE="2026-09-13";
 const CREDIT_BASELINE=[
- {name:"HSBC Mortgage 3867",aliases:["MTG 40078888353867","MTG 40078888353867","3867"],type:"Mortgage",confirmedBalance:11643,minPayment:171,apr:0,notes:"Credit-file active account ending 3867"},
- {name:"HSBC Mortgage 3913",aliases:["MTG 40078858353913","3913"],type:"Mortgage",confirmedBalance:115289,minPayment:610,apr:0,notes:"Credit-file active account ending 3913"},
- {name:"Tesco loan",aliases:["TESCO BANK","TESCO BANK LOANS","3526"],type:"Unsecured loan",confirmedBalance:7345,minPayment:145,apr:15.2,notes:"Credit-file active account ending 3526"},
- {name:"Nationwide loan",aliases:["NBS PERSONAL LOANS","NATIONWIDE","701"],type:"Unsecured loan",confirmedBalance:1850,minPayment:338,apr:15,notes:"Credit-file active account ending 701"},
- {name:"HSBC loan",aliases:["HSBC PLC LOANS","4008"],type:"Unsecured loan",confirmedBalance:8645,minPayment:278,apr:17.9,notes:"Credit-file active account ending 4008"},
- {name:"Tandem loan",aliases:["TANDEM BANK LTD","TANDEM","8612"],type:"Unsecured loan",confirmedBalance:1957,minPayment:85,apr:0,notes:"Credit-file active account ending 8612"},
- {name:"Novuna loan",aliases:["NOVUNA PERSONAL FI","NOVUNA PERSONAL FINANCE","5768"],type:"Fixed-term credit",confirmedBalance:960,minPayment:60,apr:0,notes:"Credit-file active account ending 5768"},
- {name:"Creation",aliases:["CREATION","9711"],type:"Credit card",confirmedBalance:299,minPayment:0,apr:0,notes:"Credit-file active account ending 9711"},
- {name:"PayPal Credit",aliases:["PAYPAL","4006"],type:"Credit card",confirmedBalance:151,minPayment:0,apr:0,notes:"Needs review: agencies disagree (£151 vs £0)"},
- {name:"Capital One",aliases:["CAPITAL ONE","5537"],type:"Credit card",confirmedBalance:380,minPayment:0,apr:30.34,notes:"Credit-file active account ending 5537; limit £800"},
- {name:"NewDay",aliases:["NEWDAY LTD","NEWDAY","6256"],type:"Credit card",confirmedBalance:1,minPayment:0,apr:31.384,notes:"Credit-file reports £1 active balance"},
- {name:"Nationwide overdraft",aliases:["NATIONWIDE OVERDRAFT","6616"],type:"Overdraft",confirmedBalance:1495,minPayment:0,apr:0,notes:"Credit-file current-account borrowing; limit £1,500"}
+ {name:"HSBC Mortgage 3867",aliases:["MTG 40078888353867","3867"],type:"Mortgage",confirmedBalance:11643,minPayment:171,apr:0,notes:"Mortgage — excluded from Debt Freedom consumer-debt plan"},
+ {name:"HSBC Mortgage 3913",aliases:["MTG 40078858353913","3913"],type:"Mortgage",confirmedBalance:115289,minPayment:610,apr:0,notes:"Mortgage — excluded from Debt Freedom consumer-debt plan"},
+ {name:"Nationwide overdraft",aliases:["NATIONWIDE OVERDRAFT","6616"],type:"Overdraft",confirmedBalance:1495,minPayment:0,apr:0,notes:"Debt Freedom target #1; credit limit £1,500"},
+ {name:"Nationwide loan",aliases:["NBS PERSONAL LOANS","NATIONWIDE","701"],type:"Unsecured loan",confirmedBalance:1534,minPayment:338,apr:15,notes:"Debt Freedom target #2"},
+ {name:"Novuna loan",aliases:["NOVUNA PERSONAL FI","NOVUNA PERSONAL FINANCE","5768"],type:"Fixed-term credit",confirmedBalance:900,minPayment:60,apr:0,notes:"Debt Freedom target #3"},
+ {name:"Tandem loan",aliases:["TANDEM BANK LTD","TANDEM","8612"],type:"Unsecured loan",confirmedBalance:1786,minPayment:85,apr:0,notes:"Debt Freedom target #4"},
+ {name:"Tesco loan",aliases:["TESCO BANK","TESCO BANK LOANS","3526"],type:"Unsecured loan",confirmedBalance:7200,minPayment:145,apr:15.2,notes:"Debt Freedom target #5"},
+ {name:"HSBC loan",aliases:["HSBC PLC LOANS","4008"],type:"Unsecured loan",confirmedBalance:8087,minPayment:278,apr:17.9,notes:"Debt Freedom target #6"},
+ {name:"Capital One",aliases:["CAPITAL ONE","5537"],type:"Credit card",confirmedBalance:0,minPayment:0,apr:30.34,notes:"PAID OFF — user confirmed 13 Sep 2026"},
+ {name:"Creation",aliases:["CREATION","9711"],type:"Credit card",confirmedBalance:0,minPayment:0,apr:0,notes:"PAID OFF"},
+ {name:"NewDay",aliases:["NEWDAY LTD","NEWDAY","6256"],type:"Credit card",confirmedBalance:0,minPayment:0,apr:31.384,notes:"PAID OFF"}
 ];
 function normName(s){return String(s||"").toLowerCase().replace(/[^a-z0-9]/g,"")}
 function ensureAccountAutomation(a){
@@ -365,7 +364,7 @@ function autoMatchAccountForBill(description){
  return bestScore>=20?best:null
 }
 function applyCreditBaseline(){
- if(!confirm("Apply the 13 August 2026 credit-file snapshot? This will update confirmed balances and add missing active credit accounts. Existing notes and payment history will be kept."))return;
+ if(!confirm("Apply the 13 September 2026 debt snapshot? This updates the latest confirmed balances, keeps your existing bills, Side Business data, notes and payment history, and marks Capital One, Creation and NewDay as cleared."))return;
  for(const src of CREDIT_BASELINE){
   let a=data.accounts.find(x=>normName(x.name)===normName(src.name) || (src.aliases||[]).some(alias=>normName(x.name).includes(normName(alias))||normName(alias).includes(normName(x.name))));
   if(!a){a={id:uid(),name:src.name,original:src.confirmedBalance,balance:src.confirmedBalance,accountNumber:"",sortCode:"",reference:"",phone:"",website:"",dueDay:"",paymentLedger:[]};data.accounts.push(a)}
@@ -381,12 +380,22 @@ function applyCreditBaseline(){
  data.bills.forEach(b=>{if(!b.linkedAccountId){const a=autoMatchAccountForBill(b.name||b.matchWords);if(a)b.linkedAccountId=a.id}});
  save();alert("Credit-file baseline applied. Review each account's APR and linked bill before relying on the estimated balance.")
 }
+const DEBT_FREEDOM_EXTRA=500;
+const DEBT_FREEDOM_ORDER=["Nationwide overdraft","Nationwide loan","Novuna loan","Tandem loan","Tesco loan","HSBC loan"];
+const DEBT_FREEDOM_START=21002;
+function debtFreedomAccounts(){
+ return DEBT_FREEDOM_ORDER.map(name=>data.accounts.find(a=>normName(a.name)===normName(name))).filter(Boolean)
+}
+function debtFreedomTarget(){
+ return debtFreedomAccounts().map(a=>({a,bal:estimateAccount(a).balance})).find(x=>x.bal>0)
+}
+
 function render(){
  data.payday=Math.max(1,Math.min(28,+data.payday||20));data.currentBalance=+data.currentBalance||0;data.bills=data.bills||[];data.accounts=(data.accounts||[]).map(ensureAccountAutomation);
  const current=cycleByOffset(cycleOffset),live=cycleByOffset(0);
  data.bills.forEach(b=>{b.paidCycles=b.paidCycles||{};if(b.paid===true&&!b._cycleMigrated){b.paidCycles[live.key]=true;b._cycleMigrated=true}});
  const hour=new Date().getHours();$("#greeting").textContent=`Good ${hour<12?"morning":hour<18?"afternoon":"evening"}, ${data.name} 👋`;
- const debt=data.accounts.reduce((s,a)=>s+estimateAccount(a).balance,0),repaid=Math.max(0,(+data.originalDebt||0)-debt);
+ const debt=data.accounts.filter(a=>(a.type||"")!=="Mortgage").reduce((s,a)=>s+estimateAccount(a).balance,0),repaid=Math.max(0,(+data.originalDebt||0)-debt);
  $("#homeDebt").textContent=gbp(debt);$("#debtChange").textContent=gbp(repaid)+" repaid";
 
  const makeBills=c=>data.bills.map(b=>({...b,occurrence:occurrenceForBill(b,c),cyclePaid:billPaidInCycle(b,c.key)})).sort((a,b)=>a.occurrence-b.occurrence);
@@ -403,8 +412,15 @@ function render(){
  const upcoming=liveBills.filter(b=>!b.cyclePaid&&b.occurrence>=today).slice(0,4);
  $("#upcoming").innerHTML=upcoming.length?upcoming.map(b=>`<div class="bill"><div class="row"><div><strong>${esc(b.name)}</strong><div class="muted small">Due ${b.occurrence.toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"})}</div></div><strong>${gbp(b.amount)}</strong></div></div>`).join(""):`<div class="empty">No upcoming bills in this pay cycle.</div>`;
 
- const target=data.accounts.map(a=>({a,est:estimateAccount(a).balance})).filter(x=>x.est>0).sort((x,y)=>x.est-y.est)[0];
- if(target){$("#focusTitle").textContent=`Finish ${target.a.name}`;$("#focusText").textContent=`${gbp(target.est)} estimated remaining`;$("#focusBar").style.width=Math.min(100,Math.max(0,(1-target.est/Math.max(target.a.original,1))*100))+"%"}
+ const freedomAccounts=debtFreedomAccounts(),freedomDebt=freedomAccounts.reduce((s,a)=>s+estimateAccount(a).balance,0),freedomTarget=debtFreedomTarget();
+ $("#freedomDebt").textContent=gbp(freedomDebt);
+ $("#freedomExtra").textContent=gbp(DEBT_FREEDOM_EXTRA);
+ $("#freedomTarget").textContent=freedomTarget?freedomTarget.a.name:"Debt free 🏆";
+ $("#freedomBar").style.width=Math.min(100,Math.max(0,(1-freedomDebt/DEBT_FREEDOM_START)*100))+"%";
+ $("#freedomText").textContent=freedomTarget?`${gbp(freedomTarget.bal)} remaining on ${freedomTarget.a.name}. Keep normal payments running and direct the £500 extra here.`:"Consumer-debt snowball complete. 🏆";
+ const target=freedomTarget?{a:freedomTarget.a,est:freedomTarget.bal}:null;
+ if(target){$("#focusTitle").textContent=`Finish ${target.a.name}`;$("#focusText").textContent=`${gbp(target.est)} estimated remaining · £500 extra target`;$("#focusBar").style.width=Math.min(100,Math.max(0,(1-target.est/Math.max(target.a.original,1))*100))+"%"}
+ else{$("#focusTitle").textContent="Consumer debt cleared 🏆";$("#focusText").textContent="Debt Freedom plan complete";$("#focusBar").style.width="100%"}
  $("#accountList").innerHTML=data.accounts.length?data.accounts.map(a=>{const est=estimateAccount(a),confirmed=+a.confirmedBalance||0,delta=confirmed-est.balance;return `<div class="account">
   <div class="row"><div><h3>${esc(a.name)}</h3><span class="badge ${est.balance<=0?"green":""}">${est.balance<=0?"Cleared":esc(a.type||"Active")}</span></div><strong>${gbp(est.balance)}</strong></div>
   <div class="balance-pair">
