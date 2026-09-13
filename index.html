@@ -89,7 +89,7 @@ select{width:100%;background:#071a2d;color:var(--text);border:1px solid #3c6487;
 
 <div class="app">
 <header class="top">
- <div class="brand"><div class="logo">K</div><div><div class="eyebrow">KENNEDY PRO</div><h1 id="greeting">Good evening, Chris 👋</h1><div class="muted">Small steps. Big results.</div><div class="small muted">Pro 1.6.1 · Debt Freedom</div></div></div>
+ <div class="brand"><div class="logo">K</div><div><div class="eyebrow">KENNEDY PRO</div><h1 id="greeting">Good evening, Chris 👋</h1><div class="muted">Small steps. Big results.</div><div class="small muted">Pro 1.6.2 · Debt Freedom</div></div></div>
  <button class="icon" id="settingsBtn">⚙️</button>
 </header>
 
@@ -468,11 +468,11 @@ function render(){
  $("#upcoming").innerHTML=upcoming.length?upcoming.map(b=>`<div class="bill"><div class="row"><div><strong>${esc(b.name)}</strong><div class="muted small">Due ${b.occurrence.toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"})}</div></div><strong>${gbp(b.amount)}</strong></div></div>`).join(""):`<div class="empty">No upcoming bills in this pay cycle.</div>`;
 
  const freedomAccounts=debtFreedomAccounts(),freedomDebt=freedomAccounts.reduce((s,a)=>s+estimateAccount(a).balance,0),freedomTarget=debtFreedomTarget();
- $("#freedomDebt").textContent=gbp(freedomDebt);
- $("#freedomExtra").textContent=gbp(DEBT_FREEDOM_EXTRA);
- $("#freedomTarget").textContent=freedomTarget?freedomTarget.a.name:"Debt free 🏆";
- $("#freedomBar").style.width=Math.min(100,Math.max(0,(1-freedomDebt/DEBT_FREEDOM_START)*100))+"%";
- $("#freedomText").textContent=freedomTarget?`${gbp(freedomTarget.bal)} remaining on ${freedomTarget.a.name}. Keep normal payments running and direct the £500 extra here.`:"Consumer-debt snowball complete. 🏆";
+ if($("#freedomDebt"))$("#freedomDebt").textContent=gbp(freedomDebt);
+ if($("#freedomExtra"))$("#freedomExtra").textContent=gbp(DEBT_FREEDOM_EXTRA);
+ if($("#freedomTarget"))$("#freedomTarget").textContent=freedomTarget?freedomTarget.a.name:"Debt free 🏆";
+ if($("#freedomBar"))$("#freedomBar").style.width=Math.min(100,Math.max(0,(1-freedomDebt/DEBT_FREEDOM_START)*100))+"%";
+ if($("#freedomText"))$("#freedomText").textContent=freedomTarget?`${gbp(freedomTarget.bal)} remaining on ${freedomTarget.a.name}. Keep normal payments running and direct the £500 extra here.`:"Consumer-debt snowball complete. 🏆";
  const target=freedomTarget?{a:freedomTarget.a,est:freedomTarget.bal}:null;
  if(target){$("#focusTitle").textContent=`Finish ${target.a.name}`;$("#focusText").textContent=`${gbp(target.est)} estimated remaining · £500 extra target`;$("#focusBar").style.width=Math.min(100,Math.max(0,(1-target.est/Math.max(target.a.original,1))*100))+"%"}
  else{$("#focusTitle").textContent="Consumer debt cleared 🏆";$("#focusText").textContent="Debt Freedom plan complete";$("#focusBar").style.width="100%"}
