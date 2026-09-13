@@ -434,12 +434,23 @@ function applyCreditBaseline(){
   alert("The September update hit an error, but your saved data was not reset. Error: "+(err?.message||err));
  }
 }
+const DEBT_FREEDOM_EXTRA=500;
+const DEBT_FREEDOM_ORDER=["Nationwide overdraft","Nationwide loan","Novuna loan","Tandem loan","Tesco loan","HSBC loan"];
+const DEBT_FREEDOM_START=21002;
+function debtFreedomAccounts(){
+ return DEBT_FREEDOM_ORDER.map(name=>data.accounts.find(a=>normName(a.name)===normName(name))).filter(Boolean)
+}
+function debtFreedomTarget(){
+ return debtFreedomAccounts().map(a=>({a,bal:estimateAccount(a).balance})).find(x=>x.bal>0)
+}
+
 function render(){
  data.payday=Math.max(1,Math.min(28,+data.payday||20));data.currentBalance=+data.currentBalance||0;data.bills=data.bills||[];data.accounts=(data.accounts||[]).map(ensureAccountAutomation);
  const current=cycleByOffset(cycleOffset),live=cycleByOffset(0);
  data.bills.forEach(b=>{b.paidCycles=b.paidCycles||{};if(b.paid===true&&!b._cycleMigrated){b.paidCycles[live.key]=true;b._cycleMigrated=true}});
  const hour=new Date().getHours();$("#greeting").textContent=`Good ${hour<12?"morning":hour<18?"afternoon":"evening"}, ${data.name} 👋`;
- const debt=debtFreedomAccounts().reduce((s,a)=>s+estimateAccount(a).balance,0),repaid=Math.max(0,(+data.originalDebt||0)-debt);
+ const planNames=["Nationwide overdraft","Nationwide loan","Novuna loan","Tandem loan","Tesco loan","HSBC loan"].map(normName);
+ const debt=data.accounts.filter(a=>planNames.includes(normName(a.name))).reduce((s,a)=>s+estimateAccount(a).balance,0),repaid=Math.max(0,(+data.originalDebt||0)-debt);
  $("#homeDebt").textContent=gbp(debt);$("#debtChange").textContent=gbp(repaid)+" repaid";
 
  const makeBills=c=>data.bills.map(b=>({...b,occurrence:occurrenceForBill(b,c),cyclePaid:billPaidInCycle(b,c.key)})).sort((a,b)=>a.occurrence-b.occurrence);
