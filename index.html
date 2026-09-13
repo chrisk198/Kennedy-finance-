@@ -123,6 +123,21 @@ select{width:100%;background:#071a2d;color:var(--text);border:1px solid #3c6487;
   <div id="upcoming"></div>
  </section>
  <section class="card">
+  <div class="head"><div><div class="eyebrow">DEBT FREEDOM PLAN</div><h2>Your £500 snowball</h2></div><span class="badge green">LIVE</span></div>
+  <div class="statusbar" style="margin-top:14px">
+   <div class="status"><span class="muted">Plan balance</span><strong id="freedomDebt">£21,002.00</strong></div>
+   <div class="status"><span class="muted">Extra each month</span><strong id="freedomExtra">£500.00</strong></div>
+   <div class="status"><span class="muted">Next target</span><strong id="freedomTarget">Nationwide overdraft</strong></div>
+  </div>
+  <div class="statusbar" style="margin-top:10px">
+   <div class="status"><span class="muted">Take-home</span><strong id="freedomIncome">£3,607.64</strong></div>
+   <div class="status"><span class="muted">After bills</span><strong id="freedomAfterBills">£1,301.31</strong></div>
+   <div class="status"><span class="muted">After £500 extra</span><strong id="freedomBuffer">£801.31</strong></div>
+  </div>
+  <div class="progress"><span id="freedomBar"></span></div>
+  <p class="muted small" id="freedomText">£1,495.00 remaining on Nationwide overdraft. Keep normal payments running and direct the £500 extra here.</p>
+ </section>
+ <section class="card">
   <div class="eyebrow">CURRENT FOCUS</div><h2 id="focusTitle">Finish Creation</h2>
   <p class="muted" id="focusText">Keep reducing your smallest remaining balance.</p>
   <div class="progress"><span id="focusBar"></span></div>
@@ -149,7 +164,7 @@ select{width:100%;background:#071a2d;color:var(--text);border:1px solid #3c6487;
 <section class="page" id="bills">
  <section class="card">
   <div class="head"><div><div class="eyebrow">PAY-CYCLE BILLS</div><h2 id="billMonthTitle">Current cycle</h2></div><button class="linkbtn" id="addBill">+ Add</button></div>
-   <button class="secondary" id="restoreBills" style="width:100%;margin-top:12px">Restore my 20 recurring bills</button>
+   <button class="secondary" id="restoreBills" style="width:100%;margin-top:12px">Restore verified 20 bills (£2,306.33)</button>
   <div class="toolbar"><button class="secondary" id="prevCycle">← Previous</button><button class="secondary" id="currentCycle">Current</button><button class="secondary" id="nextCycle">Next →</button></div>
   <div class="statusbar" style="margin-top:14px">
    <div class="status"><span class="muted">Total</span><strong id="bTotal">£0</strong></div>
